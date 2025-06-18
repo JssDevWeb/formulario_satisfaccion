@@ -309,11 +309,39 @@ function procesarSolicitud() {
         // Conectar a la base de datos
         $pdo = getConnection();
         
-        // Obtener preguntas
-        $preguntas_raw = getPreguntasFiltradas($pdo, $params);
+        // Caching attempt for preguntas_raw
+        $cache_key = 'preguntas_raw_' . md5(json_encode($params));
+        $preguntas_raw = null;
+        $is_apcu_available = function_exists('apcu_fetch');
+
+        if ($is_apcu_available) {
+            $success = false;
+            $preguntas_raw = apcu_fetch($cache_key, $success);
+            if ($success && $preguntas_raw !== null) { // Ensure cache hit was successful AND data is not null
+                if (defined('MODO_DESARROLLO') && MODO_DESARROLLO) {
+                    error_log("[CACHE HIT get_preguntas.php] Key: $cache_key");
+                }
+            } else {
+                $preguntas_raw = null; // Ensure it's null if fetch failed or cache returned null
+            }
+        }
+
+        if ($preguntas_raw === null) {
+            if (defined('MODO_DESARROLLO') && MODO_DESARROLLO && $is_apcu_available) {
+                 error_log("[CACHE MISS get_preguntas.php] Key: $cache_key");
+            }
+            $preguntas_raw = getPreguntasFiltradas($pdo, $params);
+            if ($is_apcu_available && $preguntas_raw !== null) {
+                apcu_store($cache_key, $preguntas_raw, 3600); // Cache for 1 hour
+                if (defined('MODO_DESARROLLO') && MODO_DESARROLLO) {
+                    error_log("[CACHE STORED get_preguntas.php] Key: $cache_key");
+                }
+            }
+        }
         
         // Procesar y organizar preguntas
-        $preguntas = procesarPreguntas($preguntas_raw, $params['incluir_opciones']);
+        // Ensure preguntas_raw is an array before passing to procesarPreguntas
+        $preguntas = procesarPreguntas($preguntas_raw ?? [], $params['incluir_opciones']);
         
         // Generar estadísticas
         $estadisticas = generarEstadisticas($preguntas);
