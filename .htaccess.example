@@ -1,0 +1,257 @@
+# ============================================
+# CONFIGURACIÓN APACHE - SISTEMA DE ENCUESTAS ACADÉMICAS
+# ============================================
+# Este archivo proporciona configuraciones de seguridad,
+# rendimiento y funcionalidad para Apache HTTP Server
+# ============================================
+
+# ============================================
+# CONFIGURACIÓN BÁSICA
+# ============================================
+
+# Habilitar reescritura de URLs
+RewriteEngine On
+
+# Configurar índices de directorio
+DirectoryIndex index.html index.php
+
+# ============================================
+# HEADERS DE SEGURIDAD
+# ============================================
+
+# Prevenir clickjacking
+Header always set X-Frame-Options "DENY"
+
+# Prevenir MIME type sniffing
+Header always set X-Content-Type-Options "nosniff"
+
+# Habilitar XSS Protection
+Header always set X-XSS-Protection "1; mode=block"
+
+# Referrer Policy
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Content Security Policy (ajustar según las necesidades)
+# Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; connect-src 'self'"
+
+# HSTS - Forzar HTTPS (descomentar si usas HTTPS)
+# Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+# ============================================
+# PROTECCIÓN DE ARCHIVOS SENSIBLES
+# ============================================
+
+# Proteger archivos de configuración
+<FilesMatch "\.(ini|conf|config|log|sql|bak|backup|old)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Proteger archivos PHP específicos
+<Files "database.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "config.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Proteger archivos de backup y temporales
+<FilesMatch "\.(bak|backup|old|tmp|temp|~)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Proteger directorios sensibles
+<DirectoryMatch "(logs|cache|config|docs|vendor)">
+    Order Deny,Allow
+    Deny from all
+</DirectoryMatch>
+
+# Proteger archivos ocultos (como .git, .env, etc.)
+<FilesMatch "^\.">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Proteger el archivo .htaccess mismo
+<Files ".htaccess">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# ============================================
+# PREVENCIÓN DE ATAQUES
+# ============================================
+
+# Bloquear user agents maliciosos comunes
+SetEnvIfNoCase User-Agent "^libwww-perl" block_bad_bots
+SetEnvIfNoCase User-Agent "wget" block_bad_bots
+SetEnvIfNoCase User-Agent "nikto" block_bad_bots
+SetEnvIfNoCase User-Agent "sqlmap" block_bad_bots
+SetEnvIfNoCase User-Agent "fimap" block_bad_bots
+SetEnvIfNoCase User-Agent "nessus" block_bad_bots
+SetEnvIfNoCase User-Agent "whatweb" block_bad_bots
+SetEnvIfNoCase User-Agent "Openvas" block_bad_bots
+
+<RequireAll>
+    Require all granted
+    Require not env block_bad_bots
+</RequireAll>
+
+# Prevenir inyección SQL en URLs
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*object.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*embed.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (SELECT|UNION|INSERT|DROP|DELETE|UPDATE|CREATE|ALTER|EXEC|EXECUTE|SCRIPT|DECLARE) [NC,OR]
+RewriteCond %{QUERY_STRING} (\.\./|\.\.) [OR]
+RewriteCond %{QUERY_STRING} (localhost|loopback|127\.0\.0\.1) [NC,OR]
+RewriteCond %{QUERY_STRING} (<|>|'|%0A|%0D|%27|%3C|%3E|%00) [NC]
+RewriteRule ^(.*)$ - [F,L]
+
+# ============================================
+# CONTROL DE ACCESO POR DIRECTORIO
+# ============================================
+
+# Permitir acceso al directorio admin solo desde IPs específicas (descomentar y ajustar)
+# <Directory "/admin">
+#     Order Deny,Allow
+#     Deny from all
+#     Allow from 192.168.1.0/24
+#     Allow from 127.0.0.1
+# </Directory>
+
+# ============================================
+# OPTIMIZACIONES DE RENDIMIENTO
+# ============================================
+
+# Habilitar compresión GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Configurar caché de archivos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Imágenes
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/ico "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS y JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    
+    # Fuentes
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    
+    # HTML (no cachear para contenido dinámico)
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Headers de caché
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|woff|woff2)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+    
+    <FilesMatch "\.(html|php)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# ============================================
+# REESCRITURA DE URLs AMIGABLES
+# ============================================
+
+# Remover extensión .php de las URLs (opcional)
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# Redirigir URLs con extensión .php a versión sin extensión (opcional)
+# RewriteCond %{THE_REQUEST} /([^.]+)\.php [NC]
+# RewriteRule ^ /%1 [NC,L,R=301]
+
+# Redirección de index.html a raíz del sitio
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+index\.html[\s?] [NC]
+RewriteRule ^index\.html$ / [R=301,L]
+
+# ============================================
+# PÁGINAS DE ERROR PERSONALIZADAS
+# ============================================
+
+ErrorDocument 400 /error/400.html
+ErrorDocument 401 /error/401.html
+ErrorDocument 403 /error/403.html
+ErrorDocument 404 /error/404.html
+ErrorDocument 500 /error/500.html
+ErrorDocument 502 /error/502.html
+ErrorDocument 503 /error/503.html
+
+# ============================================
+# CONFIGURACIÓN DE UPLOAD
+# ============================================
+
+# Limitar tamaño de archivos de subida (ajustar según necesidades)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
+
+# ============================================
+# LOGS Y DEBUGGING
+# ============================================
+
+# Personalizar logs de error (descomentar si es necesario)
+# ErrorLog logs/error.log
+# CustomLog logs/access.log combined
+
+# ============================================
+# CONFIGURACIONES DE PRODUCCIÓN
+# ============================================
+
+# Ocultar información del servidor
+ServerTokens Prod
+ServerSignature Off
+
+# Deshabilitar métodos HTTP innecesarios
+<LimitExcept GET POST HEAD>
+    Deny from all
+</LimitExcept>
+
+# ============================================
+# NOTAS IMPORTANTES
+# ============================================
+
+# 1. Ajusta las configuraciones según tu servidor y necesidades
+# 2. Testa todas las configuraciones en un entorno de desarrollo primero
+# 3. Algunas directivas requieren módulos específicos de Apache
+# 4. Monitorea los logs después de aplicar cambios
+# 5. Mantén backups de configuraciones que funcionan

@@ -1,0 +1,2230 @@
+/* ============================================
+   SISTEMA DE ENCUESTAS ACADÉMICAS - CSS ADMINISTRATIVO
+   ============================================ */
+
+/* Variables para el panel administrativo */
+:root {
+    --admin-primary: #4e73df;
+    --admin-secondary: #858796;
+    --admin-success: #1cc88a;
+    --admin-info: #36b9cc;
+    --admin-warning: #f6c23e;
+    --admin-danger: #e74a3b;
+    --admin-light: #f8f9fc;
+    --admin-dark: #5a5c69;
+    
+    --sidebar-width: 250px;
+    --navbar-height: 60px;
+}
+
+/* Layout general */
+body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.875rem;
+    color: var(--admin-dark);
+    background-color: var(--admin-light) !important;
+}
+
+/* Cards con estilos Bootstrap estándar - SIN PERSONALIZACIÓN GLOBAL */
+.card {
+    /* Mantener estilos Bootstrap por defecto - NO sobrescribir */
+    border-radius: 0.375rem;
+}
+
+/* Solo personalizar headers de cards cuando sea necesario */
+.card-header {
+    border-radius: 0.375rem 0.375rem 0 0;
+}
+
+/* Sidebar principal */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    min-height: 100vh;
+    background-color: #343a40 !important;
+}
+
+/* Contenedor sticky del sidebar */
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Navegación del sidebar */
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    margin: 0.125rem 0.5rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: var(--admin-primary);
+}
+
+.sidebar .nav-link i {
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+.sidebar .nav-link.active i {
+    opacity: 1;
+}
+
+/* Main content ajustado para sidebar fijo */
+main.content-with-sidebar {
+    margin-left: 240px;
+    transition: margin-left 0.15s ease-in-out;
+}
+
+/* Responsive sidebar */
+@media (max-width: 991px) {
+    /* En tablets, el sidebar debe ser más estrecho */
+    .sidebar {
+        width: 200px; /* Reducir de 250px a 200px */
+    }
+    
+    main.content-with-sidebar {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* En móviles, el sidebar se convierte en un overlay colapsable */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%; /* Oculto por defecto */
+        height: 100vh;
+        width: 280px; /* Más ancho cuando está visible como overlay */
+        background-color: #343a40;
+        transition: left 0.3s ease-in-out;
+        z-index: 1050; /* Por encima del contenido */
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar.show {
+        left: 0; /* Mostrar cuando tiene la clase 'show' */
+    }
+    
+    main.content-with-sidebar {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .sidebar .nav-link {
+        margin: 0;
+        border-radius: 0;
+        padding: 1rem 1.5rem; /* Más padding para móviles */
+    }
+    
+    /* Overlay para cerrar el sidebar */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+        display: none;
+    }
+    
+    .sidebar-overlay.show {
+        display: block;
+    }
+    
+    /* Botón hamburguesa para abrir sidebar en móviles */
+    .sidebar-toggle {
+        display: block;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1060;
+        background-color: var(--admin-primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 1.2rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+}
+
+@media (min-width: 769px) {
+    /* Ocultar botón hamburguesa en desktop */
+    .sidebar-toggle {
+        display: none;
+    }
+    
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+
+/* Ajustes para grid de Bootstrap */
+.row-sidebar {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.col-sidebar {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Border left para cards de métricas */
+.border-left-primary {
+    border-left: 0.25rem solid var(--admin-primary) !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid var(--admin-success) !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid var(--admin-info) !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid var(--admin-warning) !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid var(--admin-danger) !important;
+}
+
+/* Efectos hover para cards de métricas */
+.metric-card {
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Textos de estadísticas */
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.font-weight-bold {
+    font-weight: 800 !important;
+}
+
+.text-primary {
+    color: var(--admin-primary) !important;
+}
+
+.text-success {
+    color: var(--admin-success) !important;
+}
+
+.text-info {
+    color: var(--admin-info) !important;
+}
+
+.text-warning {
+    color: var(--admin-warning) !important;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+/* Navegación */
+.navbar-dark .navbar-brand {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #fff;
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    font-weight: 700;
+}
+
+/* Tablas */
+.table {
+    color: var(--admin-dark);
+}
+
+.table thead th {
+    background-color: #f8f9fc;
+    border-color: #e3e6f0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.3px;
+    color: var(--admin-secondary);
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+.table-bordered {
+    border: 1px solid #e3e6f0;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #e3e6f0;
+}
+
+/* Botones */
+.btn {
+    font-weight: 400;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1.125rem;
+    border-radius: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--admin-primary);
+    border-color: var(--admin-primary);
+}
+
+.btn-primary:hover {
+    background-color: #2e59d9;
+    border-color: #2653d4;
+}
+
+.btn-success {
+    background-color: var(--admin-success);
+    border-color: var(--admin-success);
+}
+
+.btn-success:hover {
+    background-color: #17a673;
+    border-color: #169b6b;
+}
+
+.btn-info {
+    background-color: var(--admin-info);
+    border-color: var(--admin-info);
+}
+
+.btn-info:hover {
+    background-color: #2c9faf;
+    border-color: #2a96a5;
+}
+
+.btn-warning {
+    background-color: var(--admin-warning);
+    border-color: var(--admin-warning);
+    color: #fff;
+}
+
+.btn-warning:hover {
+    background-color: #f4b619;
+    border-color: #f0b90b;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: var(--admin-danger);
+    border-color: var(--admin-danger);
+}
+
+.btn-danger:hover {
+    background-color: #e02d1b;
+    border-color: #d52a1a;
+}
+
+/* Alertas */
+.alert {
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.alert-primary {
+    background-color: #dae2f8;
+    color: #2653d4;
+}
+
+.alert-success {
+    background-color: #d1f2eb;
+    color: #169b6b;
+}
+
+.alert-info {
+    background-color: #d4edda;
+    color: #2a96a5;
+}
+
+.alert-warning {
+    background-color: #fef5e7;
+    color: #f0b90b;
+}
+
+.alert-danger {
+    background-color: #fceaea;
+    color: #d52a1a;
+}
+
+/* ============================================
+   ESTILOS ESPECÍFICOS PARA ALERTAS DE FORMULARIOS
+   ============================================ */
+
+/* Card de alertas con diseño especial */
+.alert-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
+    box-shadow: 0 4px 20px rgba(58, 59, 69, 0.15);
+}
+
+.alert-card .card-header {
+    background: linear-gradient(135deg, #e74a3b 0%, #c0392b 100%);
+    border: none;
+    padding: 1.25rem 1.5rem;
+}
+
+.alert-card .card-header h6 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Alertas internas con mejor diseño */
+.alert-formularios.alert-danger {
+    border: none;
+    border-left: 4px solid #e74a3b;
+    background: linear-gradient(135deg, rgba(231, 74, 59, 0.1) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(231, 74, 59, 0.1);
+}
+
+.alert-formularios.alert-warning {
+    border: none;
+    border-left: 4px solid #f39c12;
+    background: linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.1);
+}
+
+.alert-formularios ul li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s ease;
+}
+
+.alert-formularios ul li:last-child {
+    border-bottom: none;
+}
+
+.alert-formularios ul li:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    margin: 0 -0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+/* Badges de urgencia mejorados */
+.badge-urgencia {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 100px;
+    text-align: center;
+}
+
+.badge-urgencia.vencido {
+    background: linear-gradient(135deg, #e74a3b 0%, #c0392b 100%);
+    color: white;
+    animation: pulse-danger 2s infinite;
+    box-shadow: 0 2px 8px rgba(231, 74, 59, 0.3);
+}
+
+.badge-urgencia.critico {
+    background: linear-gradient(135deg, #e74a3b 0%, #d32f2f 100%);
+    color: white;
+    animation: pulse-danger 2s infinite;
+    box-shadow: 0 2px 8px rgba(231, 74, 59, 0.3);
+}
+
+.badge-urgencia.urgente {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    animation: pulse-warning 3s infinite;
+    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}
+
+.badge-urgencia.proximo {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+.badge-urgencia.programado {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(149, 165, 166, 0.2);
+}
+
+.badge-urgencia.expirado {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.2);
+}
+
+/* Modo oscuro para alertas */
+@media (prefers-color-scheme: dark) {
+    .alert-card {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .alert-card .card-header {
+        background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
+        color: #ffffff !important;
+    }
+    
+    .alert-card .card-header h6 {
+        color: #ffffff !important;
+    }
+    
+    .alert-formularios.alert-danger {
+        background: linear-gradient(135deg, rgba(231, 74, 59, 0.15) 0%, rgba(45, 45, 45, 0.9) 100%) !important;
+        border-left-color: #e74a3b !important;
+        color: #ffffff !important;
+    }
+    
+    .alert-formularios.alert-warning {
+        background: linear-gradient(135deg, rgba(243, 156, 18, 0.15) 0%, rgba(45, 45, 45, 0.9) 100%) !important;
+        border-left-color: #f39c12 !important;
+        color: #ffffff !important;
+    }
+    
+    /* TEXTO EN ALERTAS DE FORMULARIOS - MODO OSCURO */
+    .alert-formularios ul li {
+        border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+    }
+    
+    .alert-formularios ul li:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: #ffffff !important;
+    }
+    
+    .alert-formularios strong {
+        color: #ffffff !important;
+    }
+      /* CORREGIR TEXTO NEGRO EN MODO OSCURO - MÁXIMA ESPECIFICIDAD */
+    .alert-formularios ul,
+    .alert-formularios ul li,
+    .alert-formularios ul li *,
+    .alert-formularios p,
+    .alert-formularios span:not(.badge),
+    .alert-formularios div:not(.badge) {
+        color: #ffffff !important;
+    }
+    
+    /* FORZAR COLORES BLANCOS PARA TODO EL CONTENIDO */
+    .alert-formularios.alert-danger *:not(.badge),
+    .alert-formularios.alert-warning *:not(.badge),
+    .alert-formularios.alert-info *:not(.badge) {
+        color: #ffffff !important;
+    }
+    
+    /* TEXTO ESPECÍFICO EN LISTAS - MÁXIMA FUERZA */
+    .alert-formularios ul li:nth-child(n) {
+        color: #ffffff !important;
+    }
+    
+    .alert-formularios ul li::before,
+    .alert-formularios ul li::after {
+        color: #ffffff !important;
+    }
+    
+    /* OVERRIDE COMPLETO PARA ELEMENTOS DE TEXTO */
+    .alert-formularios .alert.alert-danger,
+    .alert-formularios .alert.alert-warning,
+    .alert-formularios .alert.alert-info {
+        color: #ffffff !important;
+    }
+    
+    .alert-formularios .alert.alert-danger strong,
+    .alert-formularios .alert.alert-warning strong,
+    .alert-formularios .alert.alert-info strong {
+        color: #ffffff !important;
+    }
+    
+    /* FUERZA MÁXIMA PARA TEXTO EN LISTAS */
+    .alert-formularios .alert ul li {
+        color: #ffffff !important;
+    }
+    
+    .alert-formularios .alert ul li span:not(.badge) {
+        color: #ffffff !important;
+    }
+}
+
+/* ============================================
+   VARIABLES BASE PARA TABLAS ADMIN - DISEÑO MODERNO
+   ============================================ */
+
+/* Variables base para modo claro - Diseño moderno */
+.admin-table {
+    --table-bg: #ffffff;
+    --table-hover-bg: rgba(78, 115, 223, 0.08);
+    --table-border-color: rgba(0, 0, 0, 0.08);
+    --table-header-bg: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%);
+    --table-header-color: #2c3e50;
+    --table-text-color: #2c3e50;
+    --table-striped-bg: rgba(248, 249, 252, 0.6);
+    --table-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    --table-radius: 12px;
+    --table-header-border: rgba(78, 115, 223, 0.15);
+}
+
+/* ============================================
+   OVERRIDE COMPLETO DE BOOTSTRAP TABLES - DISEÑO MODERNO
+   ============================================ */
+
+/* Resetear completamente las tablas de Bootstrap con diseño moderno */
+.admin-table.table,
+.admin-table.table-striped,
+.admin-table.table-hover,
+.table.admin-table,
+.table-striped.admin-table,
+.table-hover.admin-table {
+    --bs-table-bg: var(--table-bg) !important;
+    --bs-table-color: var(--table-text-color) !important;
+    --bs-table-border-color: var(--table-border-color) !important;
+    --bs-table-accent-bg: var(--table-striped-bg) !important;
+    --bs-table-striped-bg: var(--table-striped-bg) !important;
+    --bs-table-active-bg: var(--table-hover-bg) !important;
+    --bs-table-hover-bg: var(--table-hover-bg) !important;
+    
+    background-color: var(--table-bg) !important;
+    color: var(--table-text-color) !important;
+    border-color: var(--table-border-color) !important;
+    border-radius: var(--table-radius) !important;
+    overflow: hidden !important;
+    box-shadow: var(--table-shadow) !important;
+    border: none !important;
+}
+
+/* Headers con diseño moderno y plano */
+.admin-table.table thead th,
+.admin-table.table-striped thead th,
+.admin-table.table-hover thead th,
+.table.admin-table thead th,
+.table-striped.admin-table thead th,
+.table-hover.admin-table thead th {
+    background: var(--table-header-bg) !important;
+    color: var(--table-header-color) !important;
+    border: none !important;
+    border-bottom: 1px solid var(--table-border-color) !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    font-size: 0.875rem !important;
+    letter-spacing: 0.3px !important;
+    padding: 1rem !important;
+    vertical-align: middle !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+/* Sin efectos 3D en headers - diseño plano */
+.admin-table.table thead th::after,
+.admin-table.table thead th::before {
+    display: none !important;
+}
+
+/* Celdas con diseño moderno - SIN BORDES VERTICALES */
+.admin-table.table td,
+.admin-table.table th,
+.admin-table.table-striped td,
+.admin-table.table-striped th,
+.admin-table.table-hover td,
+.admin-table.table-hover th,
+.table.admin-table td,
+.table.admin-table th,
+.table-striped.admin-table td,
+.table-striped.admin-table th,
+.table-hover.admin-table td,
+.table-hover.admin-table th {
+    color: var(--table-text-color) !important;
+    border: none !important;
+    border-bottom: 1px solid var(--table-border-color) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    padding: 1rem 1rem !important;
+    vertical-align: middle !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Última fila sin borde inferior */
+.admin-table.table tbody tr:last-child td,
+.admin-table.table-striped tbody tr:last-child td,
+.admin-table.table-hover tbody tr:last-child td,
+.table.admin-table tbody tr:last-child td,
+.table-striped.admin-table tbody tr:last-child td,
+.table-hover.admin-table tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Hover states con efectos modernos */
+.admin-table.table tbody tr:hover,
+.admin-table.table-striped tbody tr:hover,
+.admin-table.table-hover tbody tr:hover,
+.table.admin-table tbody tr:hover,
+.table-striped.admin-table tbody tr:hover,
+.table-hover.admin-table tbody tr:hover {
+    --bs-table-bg-state: var(--table-hover-bg) !important;
+    background-color: var(--table-hover-bg) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.admin-table.table tbody tr:hover td,
+.admin-table.table tbody tr:hover th,
+.admin-table.table-striped tbody tr:hover td,
+.admin-table.table-striped tbody tr:hover th,
+.admin-table.table-hover tbody tr:hover td,
+.admin-table.table-hover tbody tr:hover th,
+.table.admin-table tbody tr:hover td,
+.table.admin-table tbody tr:hover th,
+.table-striped.admin-table tbody tr:hover td,
+.table-striped.admin-table tbody tr:hover th,
+.table-hover.admin-table tbody tr:hover td,
+.table-hover.admin-table tbody tr:hover th {
+    color: var(--table-text-color) !important;
+}
+
+/* Striped rows con gradiente sutil */
+.admin-table.table-striped > tbody > tr:nth-of-type(odd),
+.table-striped.admin-table > tbody > tr:nth-of-type(odd) {
+    --bs-table-bg-type: var(--table-striped-bg) !important;
+    background: var(--table-striped-bg) !important;
+}
+
+.admin-table.table-striped > tbody > tr:nth-of-type(odd) td,
+.admin-table.table-striped > tbody > tr:nth-of-type(odd) th,
+.table-striped.admin-table > tbody > tr:nth-of-type(odd) td,
+.table-striped.admin-table > tbody > tr:nth-of-type(odd) th {
+    color: var(--table-text-color) !important;
+}
+
+/* Striped + Hover con animación suave */
+.admin-table.table-striped > tbody > tr:nth-of-type(odd):hover,
+.table-striped.admin-table > tbody > tr:nth-of-type(odd):hover {
+    background-color: var(--table-hover-bg) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.admin-table.table-striped > tbody > tr:nth-of-type(odd):hover td,
+.admin-table.table-striped > tbody > tr:nth-of-type(odd):hover th,
+.table-striped.admin-table > tbody > tr:nth-of-type(odd):hover td,
+.table-striped.admin-table > tbody > tr:nth-of-type(odd):hover th {
+    color: var(--table-text-color) !important;
+}
+
+/* Borders eliminados completamente - diseño limpio sin verticales */
+.admin-table.table-bordered,
+.table-bordered.admin-table {
+    border: none !important;
+}
+
+.admin-table.table-bordered th,
+.admin-table.table-bordered td,
+.table-bordered.admin-table th,
+.table-bordered.admin-table td {
+    border: none !important;
+    border-bottom: 1px solid var(--table-border-color) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+}
+
+/* Container con sombra moderna - SIN BORDES VERTICALES */
+.admin-table,
+.admin-table.table,
+.admin-table.table-striped,
+.admin-table.table-hover,
+.table.admin-table,
+.table-striped.admin-table,
+.table-hover.admin-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: none !important;
+    border-radius: var(--table-radius) !important;
+    overflow: hidden !important;
+}
+
+.admin-table th,
+.admin-table td,
+.admin-table.table th,
+.admin-table.table td,
+.admin-table.table-striped th,
+.admin-table.table-striped td,
+.admin-table.table-hover th,
+.admin-table.table-hover td,
+.table.admin-table th,
+.table.admin-table td,
+.table-striped.admin-table th,
+.table-striped.admin-table td,
+.table-hover.admin-table th,
+.table-hover.admin-table td {
+    border: none !important;
+    border-bottom: 1px solid var(--table-border-color) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+}
+
+/* Table responsive container con diseño moderno */
+.table-responsive .admin-table,
+.table-responsive .table.admin-table {
+    background-color: var(--table-bg) !important;
+    border: none !important;
+    border-radius: var(--table-radius) !important;
+    overflow: hidden !important;
+    box-shadow: var(--table-shadow) !important;
+}
+
+/* Efecto de carga suave */
+.admin-table {
+    animation: fadeInTable 0.4s ease-out;
+}
+
+@keyframes fadeInTable {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Override agresivo para eliminar TODOS los bordes verticales */
+.admin-table *,
+.admin-table.table *,
+.admin-table.table-striped *,
+.admin-table.table-hover *,
+.table.admin-table *,
+.table-striped.admin-table *,
+.table-hover.admin-table *,
+.container-fluid .admin-table *,
+.container-fluid .admin-table.table *,
+.container-fluid .table.admin-table *,
+.table-responsive .admin-table *,
+.table-responsive .admin-table.table *,
+.table-responsive .table.admin-table * {
+    border-left: none !important;
+    border-right: none !important;
+}
+
+/* Asegurar que solo queden bordes horizontales con máxima especificidad */
+.admin-table td:first-child,
+.admin-table th:first-child,
+.admin-table td:last-child,
+.admin-table th:last-child,
+.admin-table.table td:first-child,
+.admin-table.table th:first-child,
+.admin-table.table td:last-child,
+.admin-table.table th:last-child,
+.table.admin-table td:first-child,
+.table.admin-table th:first-child,
+.table.admin-table td:last-child,
+.table.admin-table th:last-child,
+.container-fluid .admin-table td,
+.container-fluid .admin-table th,
+.container-fluid .admin-table.table td,
+.container-fluid .admin-table.table th,
+.container-fluid .table.admin-table td,
+.container-fluid .table.admin-table th,
+.table-responsive .admin-table td,
+.table-responsive .admin-table th,
+.table-responsive .admin-table.table td,
+.table-responsive .admin-table.table th,
+.table-responsive .table.admin-table td,
+.table-responsive .table.admin-table th {
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+}
+
+/* Override específico de Bootstrap table-bordered */
+.admin-table.table-bordered td,
+.admin-table.table-bordered th,
+.table-bordered.admin-table td,
+.table-bordered.admin-table th,
+.container-fluid .admin-table.table-bordered td,
+container-fluid .admin-table.table-bordered th,
+.container-fluid .table-bordered.admin-table td,
+container-fluid .table-bordered.admin-table th,
+.table-responsive .admin-table.table-bordered td,
+.table-responsive .admin-table.table-bordered th,
+.table-responsive .table-bordered.admin-table td,
+.table-responsive .table-bordered.admin-table th {
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border: none !important;
+    border-bottom: 1px solid var(--table-border-color) !important;
+}
+
+/* Eliminar cualquier borde que Bootstrap pueda aplicar */
+.admin-table,
+.admin-table.table,
+.admin-table.table-striped,
+.admin-table.table-hover,
+.admin-table.table-bordered,
+.table.admin-table,
+.table-striped.admin-table,
+.table-hover.admin-table,
+.table-bordered.admin-table {
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border: none !important;
+}
+
+/* ============================================
+   OVERRIDE DE CLASES DE TEXTO EN TABLAS
+   ============================================ */
+
+/* Forzar colores de texto dentro de tablas admin */
+.admin-table .text-muted,
+.admin-table td .text-muted,
+.admin-table th .text-muted,
+.admin-table span.text-muted,
+.admin-table small.text-muted,
+.admin-table div.text-muted,
+.admin-table p.text-muted {
+    color: #6c757d !important;
+}
+
+.admin-table .text-gray-800,
+.admin-table td .text-gray-800,
+.admin-table th .text-gray-800,
+.admin-table span.text-gray-800,
+.admin-table div.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.admin-table .text-gray-300,
+.admin-table td .text-gray-300,
+.admin-table th .text-gray-300,
+.admin-table span.text-gray-300,
+admin-table i.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.admin-table .fw-bold,
+.admin-table .font-weight-bold,
+.admin-table td .fw-bold,
+.admin-table td .font-weight-bold,
+.admin-table div.fw-bold {
+    font-weight: 700 !important;
+    color: var(--table-text-color) !important;
+}
+
+/* Enlaces en tablas */
+.admin-table a,
+.admin-table td a,
+.admin-table th a {
+    color: #4e73df !important;
+    text-decoration: none !important;
+}
+
+.admin-table a:hover,
+.admin-table td a:hover,
+.admin-table th a:hover {
+    color: #2e59d9 !important;
+}
+
+.admin-table .text-decoration-none {
+    color: #4e73df !important;
+}
+
+/* Badges en tablas */
+/* Badges en tablas con diseño moderno */
+.admin-table .badge {
+    font-size: 0.7rem !important;
+    padding: 0.35em 0.8em !important;
+    font-weight: 500 !important;
+    border-radius: 50px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    border: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+}
+
+.admin-table .badge:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.admin-table .badge.bg-primary {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(78, 115, 223, 0.3) !important;
+}
+
+.admin-table .badge.bg-secondary {
+    background: linear-gradient(135deg, #858796 0%, #6c757d 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(133, 135, 150, 0.3) !important;
+}
+
+.admin-table .badge.bg-success {
+    background: linear-gradient(135deg, #1cc88a 0%, #17a673 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(28, 200, 138, 0.3) !important;
+}
+
+.admin-table .badge.bg-info {
+    background: linear-gradient(135deg, #36b9cc 0%, #2c9faf 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(54, 185, 204, 0.3) !important;
+}
+
+.admin-table .badge.bg-warning {
+    background: linear-gradient(135deg, #f6c23e 0%, #f4b619 100%) !important;
+    color: #000000 !important;
+    border: 1px solid rgba(246, 194, 62, 0.3) !important;
+}
+
+.admin-table .badge.bg-danger {
+    background: linear-gradient(135deg, #e74a3b 0%, #e02d1b 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(231, 74, 59, 0.3) !important;
+}
+
+/* Botones en tablas con diseño moderno */
+.admin-table .btn-group-sm .btn {
+    padding: 0.375rem 0.6rem !important;
+    font-size: 0.75rem !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border-width: 1.5px !important;
+    margin: 0 2px !important;
+}
+
+.admin-table .btn-group-sm .btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.admin-table .btn-outline-primary {
+    color: #4e73df !important;
+    border-color: #4e73df !important;
+    background: rgba(78, 115, 223, 0.05) !important;
+}
+
+.admin-table .btn-outline-primary:hover {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    border-color: #4e73df !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3) !important;
+}
+
+.admin-table .btn-outline-warning {
+    color: #f6c23e !important;
+    border-color: #f6c23e !important;
+    background: rgba(246, 194, 62, 0.05) !important;
+}
+
+.admin-table .btn-outline-warning:hover {
+    background: linear-gradient(135deg, #f6c23e 0%, #f4b619 100%) !important;
+    border-color: #f6c23e !important;
+    color: #000000 !important;
+    box-shadow: 0 4px 12px rgba(246, 194, 62, 0.3) !important;
+}
+
+.admin-table .btn-outline-danger {
+    color: #e74a3b !important;
+    border-color: #e74a3b !important;
+    background: rgba(231, 74, 59, 0.05) !important;
+}
+
+.admin-table .btn-outline-danger:hover {
+    background: linear-gradient(135deg, #e74a3b 0%, #e02d1b 100%) !important;
+    border-color: #e74a3b !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(231, 74, 59, 0.3) !important;
+}
+
+.admin-table .btn-outline-info {
+    color: #36b9cc !important;
+    border-color: #36b9cc !important;
+    background: rgba(54, 185, 204, 0.05) !important;
+}
+
+.admin-table .btn-outline-info:hover {
+    background: linear-gradient(135deg, #36b9cc 0%, #2c9faf 100%) !important;
+    border-color: #36b9cc !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(54, 185, 204, 0.3) !important;
+}
+
+.admin-table .btn-outline-secondary {
+    color: #858796 !important;
+    border-color: #858796 !important;
+    background: rgba(133, 135, 150, 0.05) !important;
+}
+
+.admin-table .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #858796 0%, #6c757d 100%) !important;
+    border-color: #858796 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(133, 135, 150, 0.3) !important;
+}
+
+.table {
+    color: var(--table-text-color) !important;
+    background-color: var(--table-bg) !important;
+    border-color: var(--table-border-color) !important;
+}
+
+.table thead th {
+    background-color: var(--table-header-bg) !important;
+    border-color: var(--table-border-color) !important;
+    color: var(--table-header-color) !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 2px solid var(--table-border-color);
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--table-border-color);
+}
+
+.table tbody tr:hover {
+    background-color: var(--table-hover-bg) !important;
+}
+
+.table tbody td {
+    padding: 0.875rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--table-border-color);
+    color: var(--table-text-color) !important;
+}
+
+/* Tabla striped mejorada */
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--table-striped-bg) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd):hover {
+    background-color: var(--table-hover-bg) !important;
+}
+
+/* Bordes de tabla */
+.table-bordered {
+    border: 1px solid var(--table-border-color) !important;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid var(--table-border-color) !important;
+}
+
+/* Headers específicos */
+.table-light {
+    background-color: var(--table-header-bg) !important;
+    color: var(--table-header-color) !important;
+}
+
+/* Responsive tables */
+.table-responsive {
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: var(--table-bg) !important;
+}
+
+/* Específicamente para elementos de texto dentro de tablas */
+.table .text-muted {
+    color: #6c757d !important;
+}
+
+.table .text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.table .text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.table .fw-bold,
+.table .font-weight-bold {
+    font-weight: 700 !important;
+}
+
+/* Evitar que Bootstrap sobreescriba nuestros colores */
+.admin-table .table td,
+.admin-table .table th {
+    color: var(--table-text-color) !important;
+}
+
+.admin-table .table tbody tr:hover td {
+    color: var(--table-text-color) !important;
+}
+
+/* Badges en tablas */
+.table .badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+}
+
+/* Botones en tablas */
+.table .btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* ============================================
+   MODO OSCURO PARA TABLAS - DISEÑO MODERNO
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    .admin-table {
+        --table-bg: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+        --table-hover-bg: rgba(102, 217, 255, 0.1);
+        --table-border-color: rgba(255, 255, 255, 0.08);
+        --table-header-bg: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+        --table-header-color: #e1e8ff;
+        --table-text-color: #e9ecef;
+        --table-striped-bg: rgba(255, 255, 255, 0.02);
+        --table-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        --table-radius: 12px;
+        --table-header-border: rgba(102, 217, 255, 0.2);
+    }
+    
+    .table {
+        color: var(--table-text-color) !important;
+        background: var(--table-bg) !important;
+    }
+    
+    .table tbody tr:hover {
+        background-color: var(--table-hover-bg) !important;
+        box-shadow: 0 4px 12px rgba(102, 217, 255, 0.15) !important;
+    }
+    
+    .table-striped > tbody > tr:nth-of-type(odd) {
+        background: var(--table-striped-bg) !important;
+    }
+    
+    .table-striped > tbody > tr:nth-of-type(odd):hover {
+        background-color: var(--table-hover-bg) !important;
+        box-shadow: 0 4px 12px rgba(102, 217, 255, 0.15) !important;
+    }
+      .table-bordered {
+        border: none !important;
+    }
+    
+    .table-bordered th,
+    .table-bordered td {
+        border: none !important;
+        border-bottom: 1px solid var(--table-border-color) !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+    }
+      /* Headers planos en modo oscuro - sin efectos 3D */
+    .admin-table.table thead th::after,
+    .admin-table.table thead th::before {
+        display: none !important;
+    }
+    
+    .table-light {
+        background: var(--table-header-bg) !important;
+        color: var(--table-header-color) !important;
+    }
+      /* Cards en modo oscuro para tablas */
+    .table-responsive {
+        background: var(--table-bg) !important;
+        border: none !important;
+        border-radius: var(--table-radius) !important;
+        box-shadow: var(--table-shadow) !important;
+    }
+    
+    /* Override específico para modo oscuro - eliminar bordes verticales */
+    .admin-table *,
+    .admin-table.table *,
+    .admin-table.table-striped *,
+    .admin-table.table-hover *,
+    .table.admin-table *,
+    .table-striped.admin-table *,
+    .table-hover.admin-table *,
+    .container-fluid .admin-table *,
+    .container-fluid .admin-table.table *,
+    .container-fluid .table.admin-table *,
+    .table-responsive .admin-table *,
+    .table-responsive .admin-table.table *,
+    .table-responsive .table.admin-table * {
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+    }
+    
+    .admin-table td,
+    .admin-table th,
+    .admin-table.table td,
+    .admin-table.table th,
+    .table.admin-table td,
+    .table.admin-table th,
+    .admin-table.table-striped td,
+    .admin-table.table-striped th,
+    .admin-table.table-hover td,
+    .admin-table.table-hover th,
+    .table-striped.admin-table td,
+    .table-striped.admin-table th,    .table-hover.admin-table td,
+    .table-hover.admin-table th {
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+        border: none !important;
+        border-bottom: 1px solid var(--table-border-color) !important;
+    }
+    
+    .table {
+        color: var(--table-text-color) !important;
+        background-color: var(--table-bg);
+    }
+    
+    .table tbody tr:hover {
+        background-color: var(--table-hover-bg);
+    }
+    
+    .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: var(--table-striped-bg);
+    }
+    
+    .table-striped > tbody > tr:nth-of-type(odd):hover {
+        background-color: var(--table-hover-bg);
+    }
+      .table-bordered {
+        border-color: var(--table-border-color) !important;
+        border: 1px solid var(--table-border-color) !important;
+    }
+    
+    .table-bordered th,
+    .table-bordered td {
+        border-color: var(--table-border-color) !important;
+        border: 1px solid var(--table-border-color) !important;
+    }
+    
+    /* Forzar bordes visibles en modo oscuro */
+    .admin-table,
+    .admin-table.table,
+    .admin-table.table-striped,
+    .admin-table.table-hover,
+    .table.admin-table,
+    .table-striped.admin-table,
+    .table-hover.admin-table {
+        border: 1px solid var(--table-border-color) !important;
+    }
+    
+    .admin-table th,
+    .admin-table td,
+    .admin-table.table th,
+    .admin-table.table td,
+    .admin-table.table-striped th,
+    .admin-table.table-striped td,
+    .admin-table.table-hover th,
+    .admin-table.table-hover td,
+    .table.admin-table th,
+    .table.admin-table td,
+    .table-striped.admin-table th,
+    .table-striped.admin-table td,
+    .table-hover.admin-table th,
+    .table-hover.admin-table td {
+        border: 1px solid var(--table-border-color) !important;
+    }
+    
+    .admin-table thead th,
+    .admin-table.table thead th,
+    .admin-table.table-striped thead th,
+    .admin-table.table-hover thead th,
+    .table.admin-table thead th,
+    .table-striped.admin-table thead th,
+    .table-hover.admin-table thead th {
+        border-bottom: 2px solid var(--table-border-color) !important;
+    }
+    
+    .table-light {
+        background-color: var(--table-header-bg);
+        color: var(--table-header-color);
+    }
+    
+    /* Cards en modo oscuro para tablas */
+    .table-responsive {
+        background-color: var(--table-bg);
+        border: 1px solid var(--table-border-color);
+    }
+    
+    /* Refuerzo específico para texto en tablas */
+    .table td,
+    .table th,
+    .table td *,
+    .table th * {
+        color: var(--table-text-color) !important;
+    }
+    
+    /* Elementos específicos de texto en tablas */
+    .table .text-muted {
+        color: #adb5bd !important;
+    }
+    
+    .table .text-gray-800 {
+        color: #e9ecef !important;
+    }
+    
+    .table .text-gray-300 {
+        color: #adb5bd !important;
+    }
+    
+    .table .fw-bold,
+    .table .font-weight-bold {
+        color: #ffffff !important;
+    }
+    
+    /* Enlaces en tablas */
+    .table a {
+        color: #66d9ff !important;
+    }
+    
+    .table a:hover {
+        color: #99e6ff !important;
+    }
+    
+    .table .text-decoration-none {
+        color: #66d9ff !important;
+    }
+    
+    /* Badges en tablas para modo oscuro */
+    .table .badge.bg-secondary {
+        background-color: #6c757d !important;
+        color: #ffffff !important;
+    }
+    
+    .table .badge.bg-info {
+        background-color: #0dcaf0 !important;
+        color: #000000 !important;
+    }
+    
+    .table .badge.bg-primary {
+        background-color: #0d6efd !important;
+        color: #ffffff !important;
+    }
+    
+    .table .badge.bg-success {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+    }
+    
+    .table .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: #ffffff !important;
+    }
+}
+
+/* ============================================
+   MODO OSCURO AUTOMÁTICO - SOLO PREFERS-COLOR-SCHEME
+   ============================================ */
+
+/* Modo oscuro automático del sistema - SIN toggle manual */
+@media (prefers-color-scheme: dark) {
+    /* Body y fondos generales */
+    body {
+        background-color: #1a1a1a !important;
+        color: #e9ecef !important;
+    }
+    
+    /* Cards en modo oscuro */
+    .card:not(.alert-card) {
+        background-color: #2d2d2d !important;
+        border-color: #404040 !important;
+        color: #e9ecef !important;
+    }
+    
+    .card-header:not(.alert-card .card-header) {
+        background-color: #343434 !important;
+        border-bottom-color: #404040 !important;
+        color: #e9ecef !important;
+    }
+    
+    .card-body:not(.alert-card .card-body) {
+        background-color: #2d2d2d !important;
+        color: #e9ecef !important;
+    }
+    
+    /* Text utilities en modo oscuro */
+    .text-gray-800, .card .text-gray-800 {
+        color: #e9ecef !important;
+    }
+    
+    .text-gray-300, .card .text-gray-300 {
+        color: #adb5bd !important;
+    }
+    
+    .text-muted, .card .text-muted {
+        color: #adb5bd !important;
+    }
+    
+    .text-dark {
+        color: #e9ecef !important;
+    }
+    
+    /* Alertas Bootstrap en modo oscuro */
+    .alert:not(.alert-formularios) {
+        border-color: #404040 !important;
+    }
+    
+    .alert-info:not(.alert-formularios) {
+        background-color: rgba(13, 202, 240, 0.2) !important;
+        border-color: #0dcaf0 !important;
+        color: #7dd3fc !important;
+    }
+    
+    .alert-success:not(.alert-formularios) {
+        background-color: rgba(25, 135, 84, 0.2) !important;
+        border-color: #198754 !important;
+        color: #86efac !important;
+    }
+    
+    .alert-warning:not(.alert-formularios) {
+        background-color: rgba(255, 193, 7, 0.2) !important;
+        border-color: #ffc107 !important;
+        color: #fde047 !important;
+    }
+    
+    .alert-danger:not(.alert-formularios) {
+        background-color: rgba(220, 53, 69, 0.2) !important;
+        border-color: #dc3545 !important;
+        color: #fca5a5 !important;
+    }
+    
+    /* Tablas en modo oscuro - SOLO cuando NO tienen clase admin-table */
+    .table:not(.admin-table) {
+        color: #e9ecef !important;
+        background-color: #2d2d2d !important;
+    }
+    
+    .table:not(.admin-table) thead th {
+        background-color: #343434 !important;
+        border-bottom-color: #404040 !important;
+        color: #e9ecef !important;
+    }
+    
+    .table:not(.admin-table) tbody tr:hover {
+        background-color: #3a3a3a !important;
+    }
+    
+    /* Form controls en modo oscuro */
+    .form-control, input.form-control, textarea.form-control, select.form-control {
+        background-color: #343434 !important;
+        border-color: #495057 !important;
+        color: #e9ecef !important;
+    }
+    
+    .form-control:focus {
+        background-color: #343434 !important;
+        border-color: var(--admin-primary) !important;
+        color: #e9ecef !important;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25) !important;
+    }
+    
+    /* Estilos adicionales para mejorar visibilidad del select en modo oscuro */
+    .form-select, select.form-select,
+    .form-select:not([multiple]):not([size]),
+    select.form-select:not([multiple]):not([size]) {
+        background-color: #343434 !important;
+        color: #f8f9fa !important;
+        border: 1px solid #495057 !important;
+        opacity: 1 !important;
+    }
+    
+    /* Forzar estilos para el select de cursos específicamente */
+    #curso_grafico_id {
+        background-color: #343434 !important;
+        color: #f8f9fa !important;
+        border: 1px solid #495057 !important;
+        font-weight: 400 !important;
+        opacity: 1 !important;
+    }
+    
+    #curso_grafico_id option {
+        background-color: #2d2d2d !important;
+        color: #f8f9fa !important;
+    }
+    
+    #curso_grafico_id option[value=""] {
+        color: #adb5bd !important;
+        font-style: italic !important;
+    }
+}
+
+/* ============================================
+   REFUERZO ESPECÍFICO CONTRA CONFLICTOS BOOTSTRAP
+   ============================================ */
+
+/* Tablas - Especificidad alta para sobrescribir Bootstrap */
+.container-fluid .admin-table.table,
+.admin-table.table.table-striped,
+.admin-table.table.table-hover {
+    color: var(--table-text-color) !important;
+    background-color: var(--table-bg) !important;
+    border-color: var(--table-border-color) !important;
+}
+
+.container-fluid .admin-table.table thead th,
+.admin-table.table.table-striped thead th,
+.admin-table.table.table-hover thead th {
+    background-color: var(--table-header-bg) !important;
+    border-color: var(--table-border-color) !important;
+    color: var(--table-header-color) !important;
+}
+
+.container-fluid .admin-table.table tbody td,
+.admin-table.table.table-striped tbody td,
+.admin-table.table.table-hover tbody td {
+    color: var(--table-text-color) !important;
+    border-color: var(--table-border-color) !important;
+}
+
+.container-fluid .admin-table.table tbody tr:hover,
+.admin-table.table.table-striped tbody tr:hover,
+.admin-table.table.table-hover tbody tr:hover {
+    background-color: var(--table-hover-bg) !important;
+}
+
+.container-fluid .admin-table.table tbody tr:hover td,
+.admin-table.table.table-striped tbody tr:hover td,
+.admin-table.table.table-hover tbody tr:hover td {
+    color: var(--table-text-color) !important;
+}
+
+/* Elementos de texto específicos dentro de tablas admin */
+.admin-table.table .text-muted,
+.admin-table.table td .text-muted,
+.admin-table.table th .text-muted,
+.admin-table.table span.text-muted,
+.admin-table.table small.text-muted {
+    color: #6c757d !important;
+}
+
+.admin-table.table .text-gray-800,
+.admin-table.table td .text-gray-800,
+.admin-table.table th .text-gray-800,
+.admin-table.table span.text-gray-800,
+.admin-table.table div.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.admin-table.table .text-gray-300,
+.admin-table.table td .text-gray-300,
+.admin-table.table th .text-gray-300,
+.admin-table.table span.text-gray-300,
+admin-table i.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.admin-table.table .fw-bold,
+.admin-table.table .font-weight-bold,
+.admin-table td .fw-bold,
+.admin-table td .font-weight-bold,
+.admin-table div.fw-bold {
+    font-weight: 700 !important;
+    color: var(--table-text-color) !important;
+}
+
+/* ============================================
+   MEJORAS ADICIONALES PARA MODO OSCURO
+   ============================================ */
+
+/* ============================================
+   ELIMINADAS REGLAS DE MODO OSCURO GLOBAL
+   Solo usar @media (prefers-color-scheme: dark) para elementos específicos
+   ============================================ */
+
+/* Los cards mantienen estilos Bootstrap estándar */
+
+/* ============================================
+   ELIMINADAS REGLAS PROBLEMÁTICAS DE MODO OSCURO GLOBAL
+   Solo mantener @media (prefers-color-scheme: dark) para elementos específicos
+   ============================================ */
+
+/* Los estilos globales NO deben cambiar automáticamente */
+
+/* ============================================
+   MODALES - SOLO ESTILOS BASE
+   ============================================ */
+
+/* Estilos base para modales - mantener Bootstrap estándar */
+.modal-content {
+    border-radius: 0.5rem;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+/* Backdrop del modal */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Solo usar @media para preferencias del sistema */
+@media (prefers-color-scheme: dark) {
+    .modal-content {
+        background-color: #2d2d2d;
+        border-color: #404040;
+        color: #e9ecef;
+    }
+    
+    .modal-header {
+        background-color: #343434;
+        border-bottom-color: #404040;
+        color: #e9ecef;
+    }
+    
+    .modal-title {
+        color: #e9ecef;
+    }
+    
+    .modal-body {
+        background-color: #2d2d2d;
+        color: #e9ecef;
+    }
+    
+    .modal-footer {
+        background-color: #2d2d2d;
+        border-top-color: #404040;
+        color: #e9ecef;
+    }
+    
+    .modal .form-label {
+        color: #e9ecef;
+    }
+    
+    .modal .form-check-label {
+        color: #e9ecef;
+    }
+    
+    .modal .form-text {
+        color: #adb5bd;
+    }
+}
+
+/* ============================================
+   ELIMINADAS REGLAS PROBLEMÁTICAS DE MODO OSCURO
+   que estaban afectando el dashboard global
+   ============================================ */
+
+/* Los modales mantienen comportamiento estándar de Bootstrap */
+
+/* ============================================
+   MEJORAS VISUALES BÁSICAS PARA MODALES
+   ============================================ */
+
+/* Animación mejorada */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    transform: translate(0, -50px);
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+/* Responsive para modales */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* ============================================
+   CLASES ESPECÍFICAS PARA DASHBOARD ADMIN
+   ============================================ */
+
+/* Cards métricas */
+.metric-card {
+    transition: all 0.15s ease-in-out;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+}
+
+/* Bordes izquierdos coloridos */
+.border-left-primary {
+    border-left: 0.25rem solid var(--admin-primary);
+}
+
+.border-left-success {
+    border-left: 0.25rem solid var(--admin-success);
+}
+
+.border-left-info {
+    border-left: 0.25rem solid var(--admin-info);
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid var(--admin-warning);
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid var(--admin-danger);
+}
+
+/* Textos utilitarios */
+.text-xs {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.text-gray-800 {
+    color: #5a5c69;
+}
+
+.text-gray-300 {
+    color: #dddfeb;
+}
+
+/* Botones de acción rápida */
+.quick-action-btn {
+    margin-bottom: 0.5rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+/* Contenedores de gráficos */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Animaciones suaves */
+.card, .btn, .table {
+    transition: all 0.15s ease-in-out;
+}
+
+/* Estados hover mejorados */
+.card:hover {
+    box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+}
+
+.table tbody tr:hover {
+    transform: scale(1.005);
+}
+
+/* Responsive mejoras */
+@media (max-width: 768px) {
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+    
+    .quick-action-btn {
+        margin-bottom: 0.75rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+/* ============================================
+   MODO OSCURO - REFUERZO ESPECÍFICO DASHBOARD
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    /* Override específico para elementos críticos */
+    .text-gray-800,
+    .h5.mb-0.font-weight-bold.text-gray-800,
+    .metric-card .h5,
+    .metric-card .text-gray-800 {
+        color: #ffffff !important;
+    }
+    
+    .text-gray-300,
+    .bi.fa-2x.text-gray-300 {
+        color: #6c757d !important;
+    }
+    
+    .text-muted,
+    .metric-card small,
+    .card-body small {
+        color: #adb5bd !important;
+    }
+    
+    /* Cards específicas del dashboard */
+    .metric-card {
+        background-color: #2d2d2d !important;
+        color: #f8f9fc !important;
+    }
+    
+    .metric-card .card-body {
+        background-color: transparent !important;
+    }
+    
+    /* Hover effects mejorados para modo oscuro */
+    .metric-card:hover {
+        box-shadow: 0 0.25rem 2rem 0 rgba(0, 0, 0, 0.5);
+    }
+    
+    .card:hover {
+        box-shadow: 0 0.25rem 2rem 0 rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Asegurar que todos los textos sean visibles */
+    .card * {
+        color: inherit !important;
+    }
+    
+    .card .text-primary {
+        color: var(--admin-primary) !important;
+    }
+    
+    .card .text-success {
+        color: var(--admin-success) !important;
+    }
+    
+    .card .text-info {
+        color: var(--admin-info) !important;
+    }
+    
+    .card .text-warning {
+        color: var(--admin-warning) !important;
+    }
+    
+    .card .text-danger {
+        color: var(--admin-danger) !important;
+    }
+}
+
+/* ============================================
+   RESTAURACIÓN COMPLETA DE FONDOS DEL DASHBOARD
+   ============================================ */
+
+/* Asegurar que el body tenga el fondo correcto */
+body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.875rem;
+    color: var(--admin-dark);
+    background-color: var(--admin-light) !important;
+}
+
+/* Restaurar fondos normales de Bootstrap para cards */
+.card:not(.alert-card) {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+.card-header:not(.alert-card .card-header) {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    color: #212529 !important;
+}
+
+.card-body:not(.alert-card .card-body) {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+/* Asegurar que los elementos de texto tengan colores normales */
+.card:not(.alert-card) .text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.card:not(.alert-card) .text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.card:not(.alert-card) .text-muted {
+    color: #6c757d !important;
+}
+
+/* Restaurar alertas normales de Bootstrap */
+.alert:not(.alert-formularios) {
+    background-color: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
+}
+
+/* Asegurar que las tablas normales mantengan estilos Bootstrap */
+.table:not(.admin-table) {
+    color: #212529 !important;
+    background-color: #ffffff !important;
+}
+
+.table:not(.admin-table) thead th {
+    background-color: #f8f9fa !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    color: #495057 !important;
+}
+
+.table:not(.admin-table) tbody tr:hover {
+    background-color: #f5f5f5 !important;
+}
+
+/* Lista groups normales */
+.list-group-item {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 !important;
+    color: #495057 !important;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* ============================================
+   MODO OSCURO AUTOMÁTICO - SOLO PREFERS-COLOR-SCHEME
+   ============================================ */
+
+/* Modo oscuro automático del sistema - SIN toggle manual */
+@media (prefers-color-scheme: dark) {
+    /* Body y fondos generales */
+    body {
+        background-color: #1a1a1a !important;
+        color: #e9ecef !important;
+    }
+    
+    /* Cards en modo oscuro */
+    .card:not(.alert-card) {
+        background-color: #2d2d2d !important;
+        border-color: #404040 !important;
+        color: #e9ecef !important;
+    }
+    
+    .card-header:not(.alert-card .card-header) {
+        background-color: #343434 !important;
+        border-bottom-color: #404040 !important;
+        color: #e9ecef !important;
+    }
+    
+    .card-body:not(.alert-card .card-body) {
+        background-color: #2d2d2d !important;
+        color: #e9ecef !important;
+    }
+    
+    /* Text utilities en modo oscuro */
+    .text-gray-800, .card .text-gray-800 {
+        color: #e9ecef !important;
+    }
+    
+    .text-gray-300, .card .text-gray-300 {
+        color: #adb5bd !important;
+    }
+    
+    .text-muted, .card .text-muted {
+        color: #adb5bd !important;
+    }
+    
+    .text-dark {
+        color: #e9ecef !important;
+    }
+    
+    /* Alertas Bootstrap en modo oscuro */
+    .alert:not(.alert-formularios) {
+        border-color: #404040 !important;
+    }
+    
+    .alert-info:not(.alert-formularios) {
+        background-color: rgba(13, 202, 240, 0.2) !important;
+        border-color: #0dcaf0 !important;
+        color: #7dd3fc !important;
+    }
+    
+    /* Tablas en modo oscuro - SOLO cuando NO tienen clase admin-table */
+    .table:not(.admin-table) {
+        color: #e9ecef !important;
+        background-color: #2d2d2d !important;
+    }
+    
+    .table:not(.admin-table) thead th {
+        background-color: #343434 !important;
+        border-bottom-color: #404040 !important;
+        color: #e9ecef !important;
+    }
+    
+    .table:not(.admin-table) tbody tr:hover {
+        background-color: #3a3a3a !important;
+    }
+    
+    /* Form controls en modo oscuro */
+    .form-control, input.form-control, textarea.form-control, select.form-control {
+        background-color: #343434 !important;
+        border-color: #495057 !important;
+        color: #e9ecef !important;
+    }
+    
+    .form-control:focus {
+        background-color: #343434 !important;
+        border-color: var(--admin-primary) !important;
+        color: #e9ecef !important;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25) !important;
+    }
+    
+    /* Estilos adicionales para mejorar visibilidad del select en modo oscuro */
+    .form-select, select.form-select,
+    .form-select:not([multiple]):not([size]),
+    select.form-select:not([multiple]):not([size]) {
+        background-color: #343434 !important;
+        color: #f8f9fa !important;
+        border: 1px solid #495057 !important;
+        opacity: 1 !important;
+    }
+    
+    /* Forzar estilos para el select de cursos específicamente */
+    #curso_grafico_id {
+        background-color: #343434 !important;
+        color: #f8f9fa !important;
+        border: 1px solid #495057 !important;
+        font-weight: 400 !important;
+        opacity: 1 !important;
+    }
+    
+    #curso_grafico_id option {
+        background-color: #2d2d2d !important;
+        color: #f8f9fa !important;
+    }
+    
+    #curso_grafico_id option[value=""] {
+        color: #adb5bd !important;
+        font-style: italic !important;
+    }
+}
+
+/* ============================================
+   CORRECCIÓN CRÍTICA PARA .alert-card - TEXTO NEGRO EN MODO OSCURO
+   ============================================ */
+.alert-card .alert-danger,
+.alert-card .alert-warning,
+.alert-card .alert-info {
+    color: #ffffff !important;
+}
+
+/* FORZAR TEXTO BLANCO EN TODAS LAS ALERTAS DENTRO DE .alert-card */
+.alert-card .alert,
+.alert-card .alert *,
+.alert-card .alert strong,
+.alert-card .alert span:not(.badge),
+.alert-card .alert ul,
+.alert-card .alert ul li,
+.alert-card .alert ul li span:not(.badge) {
+    color: #ffffff !important;
+}
+
+/* MÁXIMA ESPECIFICIDAD PARA TEXTO EN LISTAS DENTRO DE .alert-card */
+.alert-card .card-body .alert ul li {
+    color: #ffffff !important;
+}
+
+.alert-card .card-body .alert ul li strong {
+    color: #ffffff !important;
+}
+
+.alert-card .card-body .alert ul li span:not(.badge) {
+    color: #ffffff !important;
+}
+
+/* OVERRIDE NUCLEAR - FORZAR TODO EL TEXTO A BLANCO */
+.alert-card .card-body * {
+    color: #ffffff !important;
+}
+
+/* EXCEPCIONES PARA BADGES QUE DEBEN MANTENER SUS COLORES */
+.alert-card .badge.bg-dark {
+    color: #ffffff !important;
+}
+
+.alert-card .badge.bg-warning {
+    color: #000000 !important;
+}
+
+.alert-card .badge.bg-info {
+    color: #ffffff !important;
+}
+
+.alert-card .badge.bg-danger {
+    color: #ffffff !important;
+}
+
+.alert-card .badge.bg-secondary {
+    color: #ffffff !important;
+}

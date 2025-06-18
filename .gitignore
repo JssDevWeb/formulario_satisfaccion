@@ -1,0 +1,122 @@
+# Archivos y directorios para ignorar en Git
+
+# Archivos de configuración local
+config/local.php
+config/production.php
+.env
+.env.local
+.env.production
+
+# Archivos de base de datos
+*.sql.backup
+database_backup_*.sql
+*.db
+
+# Logs y cache
+logs/*.log
+logs/*.txt
+cache/*.json
+cache/*.php
+cache/*.tmp
+
+# Archivos temporales del sistema
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE/Editor
+.vscode/
+.idea/
+*.sublime-*
+*.code-workspace
+
+# Node.js (si se usa para build)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Composer (si se usa)
+vendor/
+composer.lock
+
+# Archivos de backup
+*.backup
+*.bak
+backup_*
+*_backup
+
+# Archivos de reportes generados
+reportes_generados/
+exports/
+downloads/
+
+# Archivos de testing
+test_results/
+coverage/
+*.coverage
+
+# Archivos de desarrollo local
+dev/
+development/
+local/
+
+# Credenciales y claves
+*.key
+*.pem
+*.p12
+credentials.json
+secrets.json
+
+# Archivos de upload temporales
+uploads/temp/
+uploads/tmp/
+
+# Archivos de sistema Windows
+desktop.ini
+*.lnk
+
+# Archivos de sistema Linux/Mac
+.directory
+.Trash-*
+
+# Archivos PHP específicos
+*.php~
+.phpunit.result.cache
+
+# Archivos de documentación generada automáticamente
+docs/generated/
+api-docs/
+
+# Archivos de monitoreo y estadísticas
+stats/
+metrics/
+monitoring/
+
+# Archivos de configuración de servidor web
+.htaccess.local
+nginx.conf.local
+apache.conf.local
+
+# Archivos de migración de BD ya aplicados
+migrations/applied/
+schema/backups/
+
+# Archivos de assets compilados (si se compilan)
+assets/dist/
+assets/build/
+public/build/
+
+# Archivos de error específicos del proyecto
+error_reports/
+crash_dumps/
+
+# Configuraciones específicas del desarrollador
+.user.ini
+php.ini.local

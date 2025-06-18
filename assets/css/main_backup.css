@@ -1,0 +1,1588 @@
+/* ============================================
+   SISTEMA DE ENCUESTAS ACADÉMICAS - CSS OPTIMIZADO
+   Diseño mejorado, responsivo y equilibrado
+   ============================================ */
+
+/* Variables CSS mejoradas */
+:root {
+    /* Colores principales - HEADER ARMONIOSO */
+    --primary-color: #0d6efd;
+    --primary-light: #6ea8fe;
+    --primary-dark: #0a58ca;
+    --header-color: #2c3e50; /* Color más neutro y profesional */
+    --header-light: #34495e;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    
+    /* Colores de fondo */
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: #ffffff;
+    --table-bg: #ffffff;
+    --hover-bg: #f8f9fa;
+    
+    /* Espaciado y bordes */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 1rem;
+    --border-radius-sm: 0.25rem;
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --box-shadow-lg: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    --box-shadow-hover: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Tipografía */
+    --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.125rem;
+    --line-height: 1.5;
+    
+    /* Breakpoints */
+    --mobile: 768px;
+    --tablet: 992px;
+    --desktop: 1200px;
+}
+
+/* Reset mejorado */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Base del documento */
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    color: var(--dark-color);
+    background: var(--bg-gradient);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* FOOTER STICKY - Estructura flexbox para mantener footer abajo */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   COMPONENTES BASE
+   ============================================ */
+
+/* Cards mejoradas */
+.card {
+    background: var(--card-bg);
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--box-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Formularios optimizados */
+.form-control,
+.form-select {
+    border: 2px solid #e9ecef;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+    background-color: #fff;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    outline: none;
+}
+
+.form-control:invalid {
+    border-color: var(--danger-color);
+}
+
+.form-control:valid {
+    border-color: var(--success-color);
+}
+
+/* ============================================
+   PLACEHOLDERS PERSONALIZADOS
+   ============================================ */
+
+/* Estilo general para placeholders */
+.form-control::placeholder,
+textarea.form-control::placeholder {
+    color: #6c757d; /* Color gris suave */
+    opacity: 0.8;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* Placeholder específico para comentarios/textarea */
+textarea[name*="professor_"]::placeholder,
+.comments-section textarea::placeholder {
+    color: #0dcaf0; /* Color azul info */
+    opacity: 0.9;
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* Hover en el placeholder */
+.form-control:hover::placeholder {
+    color: var(--primary-color);
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+/* Focus en el placeholder */
+.form-control:focus::placeholder {
+    color: var(--primary-light);
+    opacity: 0.6;
+}
+
+/* Modo oscuro - placeholders */
+@media (prefers-color-scheme: dark) {
+    .form-control::placeholder,
+    textarea.form-control::placeholder {
+        color: #adb5bd;
+        opacity: 0.8;
+    }
+    
+    textarea[name*="professor_"]::placeholder,
+    .comments-section textarea::placeholder {
+        color: #74c0fc;
+        opacity: 0.9;
+    }
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL DEL SURVEY
+   ============================================ */
+
+.survey-container {
+    max-width: 95%; /* Aprovechar más espacio de la pantalla */
+    width: 95%;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: transparent;
+    /* Contribuye al layout flexbox */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   SECCIONES DEL FORMULARIO
+   ============================================ */
+
+.form-section,
+.evaluation-section {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 3rem;
+    margin: 1.5rem auto;
+    width: 90%; /* Ocupa el 90% del ancho de la pantalla en escritorio */
+    max-width: 90vw; /* Máximo 90% del viewport width */
+    min-width: min-content; /* Asegura espacio mínimo para el contenido */
+    box-shadow: var(--box-shadow-lg);
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    min-height: 650px; /* Altura mínima adecuada */
+    transition: all 0.3s ease-in-out;
+}
+
+.evaluation-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.evaluation-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, #0b5ed7 50%, var(--primary-color) 100%);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+.section-title {
+    font-size: 1.5rem; /* Tamaño más equilibrado */
+    font-weight: 700;
+    margin-bottom: 1.5rem; /* Espacio reducido */
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--dark-color);
+}
+
+.evaluation-section .section-title {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    margin: -3rem -3rem 2rem -3rem;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    border-bottom: none;
+    position: relative;
+}
+
+.evaluation-section .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 10px solid #0b5ed7;
+}
+
+/* ============================================
+   ESCALA DE EVALUACIÓN HORIZONTAL - VERSIÓN LIMPIA FINAL
+   ============================================ */
+
+/* Información de la escala - Solo estilos necesarios */
+.evaluation-scale-info {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #2c3e50;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 1.5rem auto;
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.15);
+    width: 90%;
+    max-width: 90vw;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Título de la escala */
+.evaluation-scale-info h6 {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(44, 62, 80, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    margin: 0 auto 1.5rem auto;
+    max-width: fit-content;
+    border: 2px solid rgba(44, 62, 80, 0.2);
+}
+
+/* Container principal de la escala - HORIZONTAL FIJO */
+.scale-horizontal-container {
+    display: flex !important; /* Necesario para anular cualquier display de Bootstrap */
+    justify-content: center;
+    align-items: stretch;
+    flex-direction: row !important; /* Crítico para mantener horizontal */
+    flex-wrap: nowrap !important; /* Crítico para evitar wrapping */
+    gap: 0.5rem;
+    margin: 0 auto;
+    width: auto;
+    min-width: min-content;
+    position: relative;
+    float: none;
+}
+
+/* Wrapper de cada elemento de la escala */
+.scale-item-wrapper {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: auto;
+    max-width: none;
+    float: none;
+    position: relative;
+    width: auto;
+}
+
+/* Elemento individual de la escala */
+.scale-item {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #2c3e50;
+    border-radius: 15px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-width: 90px;
+    max-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+}
+
+.scale-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
+    background: rgba(255, 255, 255, 1);
+    border-color: #0d6efd;
+}
+
+/* Emojis de la escala */
+.emoji-display {
+    font-size: 1.2rem; /* Más pequeño para coincidir con la imagen */
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    display: block;
+    height: 1.2rem;
+    width: 1.2rem;
+    text-align: center;
+}
+
+/* Texto de la escala */
+.scale-item small {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+/* RESPONSIVE - MÓVIL */
+@media (max-width: 768px) {
+    .scale-horizontal-container {
+        gap: 0.25rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding: 0;
+        flex-direction: row !important; /* Mantener para asegurar horizontal */
+        display: flex !important; /* Mantener para anular posibles cambios */
+        flex-wrap: nowrap !important; /* Crítico para evitar wrapping */
+        width: auto;
+    }
+    
+    .scale-item-wrapper {
+        flex: 0 0 auto;
+        min-width: auto;
+        max-width: none;
+        display: flex;
+        float: none;
+        width: auto;
+    }
+    
+    .scale-item {
+        padding: 0.75rem 0.5rem;
+        max-width: none;
+        min-width: auto;        display: block;
+        min-width: 80px;
+        max-width: 95px;
+    }
+      .emoji-display {
+        font-size: 1.0rem; /* Ajustado para tablet */
+        height: 1.0rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .scale-item small {
+        font-size: 0.7rem;
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .scale-horizontal-container {
+        gap: 0.125rem;
+    }
+    
+    .scale-item-wrapper {
+        min-width: 70px;
+        max-width: 85px;
+    }
+    
+    .scale-item {
+        padding: 0.5rem 0.25rem;
+        max-width: 80px;
+        min-width: 65px;
+    }
+      .emoji-display {
+        font-size: 0.8rem; /* Ajustado para móvil pequeño */
+        height: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .scale-item small {
+        font-size: 0.65rem;
+        line-height: 1.1;
+    }
+}
+
+/* ============================================
+   TABLA DE EVALUACIÓN
+   ============================================ */
+
+.evaluation-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--box-shadow-lg);
+    margin: 1.5rem auto;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+}
+
+.evaluation-table th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: var(--dark-color);
+    font-weight: 700;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    border: none;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(13, 110, 253, 0.1);
+}
+
+.evaluation-table th:first-child {
+    text-align: left;
+    padding-left: 1.5rem;
+    min-width: 250px;
+    text-transform: none;
+    font-size: var(--font-size-base);
+}
+
+/* Headers específicos con emojis - texto arriba, emoji grande */
+.evaluation-table th.emoji-header {
+    vertical-align: top !important; /* Bootstrap anula esto, necesario */
+    padding: 0.5rem 0.75rem 1.5rem 0.75rem !important; /* Bootstrap tiene padding específico */
+    font-size: 0.85rem;
+    line-height: 1.2;
+    text-transform: none !important; /* Bootstrap pone uppercase por defecto */
+    position: relative;
+    height: 80px !important; /* Asegurar altura específica */
+    text-align: center;
+}
+
+/* Separar texto y emoji en headers */
+.evaluation-table th.emoji-header::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.0rem; /* Más pequeño para coincidir con la imagen */
+    line-height: 1;
+}
+
+/* Emojis específicos para cada header */
+.evaluation-table th.emoji-header:nth-child(2)::after { content: '😃'; }
+.evaluation-table th.emoji-header:nth-child(3)::after { content: '🙂'; }
+.evaluation-table th.emoji-header:nth-child(4)::after { content: '😐'; }
+.evaluation-table th.emoji-header:nth-child(5)::after { content: '😕'; }
+.evaluation-table th.emoji-header:nth-child(6)::after { content: '😞'; }
+
+.evaluation-table td {
+    padding: 1rem 0.75rem;
+    border: none;
+    border-bottom: 1px solid rgba(13, 110, 253, 0.05);
+    text-align: center;
+    vertical-align: middle;
+    transition: var(--transition);
+}
+
+.evaluation-table td:first-child {
+    text-align: left;
+    padding-left: 1.5rem;
+    font-weight: 500;
+    color: var(--dark-color);
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.8) 0%, rgba(233, 236, 239, 0.3) 100%);
+    border-right: 2px solid rgba(13, 110, 253, 0.1);
+}
+
+.evaluation-table tr:hover td {
+    background-color: rgba(13, 110, 253, 0.05);
+    transform: scale(1.01);
+}
+
+.evaluation-table tr:hover td:first-child {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+}
+
+.evaluation-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ============================================
+   CELDAS DE EMOJI
+   ============================================ */
+
+.emoji-cell {
+    position: relative;
+    cursor: pointer;
+    min-width: 80px;
+    min-height: 60px;
+    transition: var(--transition);
+    user-select: none;
+    border-radius: var(--border-radius);
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.3) 0%, rgba(233, 236, 239, 0.1) 100%);
+}
+
+.emoji-cell:hover {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    border: 2px solid rgba(13, 110, 253, 0.3);
+}
+
+.emoji-cell.selected {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.emoji-cell.selected:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #084298 100%);
+    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.5);
+}
+
+.emoji-cell input[type="radio"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+}
+
+.emoji-cell::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(33, 37, 41, 0.95) 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    pointer-events: none;
+    z-index: 20;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.emoji-cell:hover::after {
+    opacity: 1;
+}
+
+/* Estilos para emojis dinámicos */
+.emoji-only {
+    font-size: 2rem;
+    display: block;
+    text-align: center;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+    margin: 0.25rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Mejorar renderizado de emojis */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Emoji visible solo cuando la celda está seleccionada */
+.emoji-cell.selected .emoji-only {
+    display: block;
+}
+
+/* Por defecto oculto */
+.emoji-cell .emoji-only {
+    display: none;
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: var(--transition);
+    border: none;
+    font-size: var(--font-size-base);
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    box-shadow: var(--box-shadow);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #084298 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.start-survey-btn {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 50%, #0a58ca 100%);
+    color: white;
+    padding: 1.25rem 2.5rem;
+    border-radius: 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    box-shadow: 0 0.5rem 1.5rem rgba(13, 110, 253, 0.3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: none;
+    letter-spacing: 0.5px;
+    display: block;
+    margin: 2rem auto;
+    text-align: center;
+    min-width: 280px;
+}
+
+.start-survey-btn:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 50%, #084298 100%);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0.75rem 2rem rgba(13, 110, 253, 0.4);
+}
+
+/* ============================================
+   DISEÑO PROFESIONAL UX PARA PANTALLA PRINCIPAL
+   ============================================ */
+
+/* Contenedor principal con diseño moderno */
+#intro-text {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 2rem;
+    padding: 0;
+    box-shadow: 
+        0 2rem 4rem rgba(0, 0, 0, 0.08),
+        0 0.5rem 1rem rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    margin: 3rem auto;
+    max-width: 1200px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Efecto de gradiente superior decorativo */
+#intro-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, 
+        var(--primary-color) 0%, 
+        #0b5ed7 25%, 
+        #0dcaf0 50%, 
+        #0b5ed7 75%, 
+        var(--primary-color) 100%);
+    border-radius: 2rem 2rem 0 0;
+}
+
+/* Header de bienvenida */
+.intro-section {
+    padding: 3rem 3rem 2rem 3rem;
+}
+
+.intro-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid rgba(13, 110, 253, 0.1);
+    position: relative;
+}
+
+.intro-header h5 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1rem;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.intro-header .bi-info-circle {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-right: 1rem;
+    vertical-align: middle;
+}
+
+.intro-subtitle {
+    font-size: 1.125rem;
+    color: #64748b;
+    font-weight: 400;
+    margin: 0;
+    font-style: italic;
+}
+
+/* Layout de dos columnas profesional */
+.intro-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 3rem;
+    padding: 0 3rem;
+}
+
+/* Columna de instrucciones */
+.intro-instructions {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    position: relative;
+}
+
+.intro-instructions::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, #0b5ed7 100%);
+    border-radius: 1.5rem 1.5rem 0 0;
+}
+
+.intro-instructions .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.intro-instructions .section-title .bi {
+    color: var(--primary-color);
+    font-size: 1.75rem;
+}
+
+.intro-description {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #475569;
+    margin-bottom: 2rem;
+    text-align: justify;
+}
+
+/* Características del sistema mejoradas */
+.system-features {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.25rem 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.feature-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.feature-item i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.feature-item span {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #334155;
+}
+
+/* Columna de escala de evaluación */
+.evaluation-scale-info {
+    background: linear-gradient(135deg, #fef7ff 0%, #f3e8fe 100%);
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    position: relative;
+}
+
+.evaluation-scale-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+    border-radius: 1.5rem 1.5rem 0 0;
+}
+
+.evaluation-scale-info .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.evaluation-scale-info .section-title .bi {
+    color: #8b5cf6;
+    font-size: 1.75rem;
+}
+
+/* Escala horizontal mejorada */
+.scale-horizontal-container {
+    display: flex !important;
+    justify-content: center;
+    align-items: stretch;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.scale-item-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scale-item {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 1.5rem 0.75rem;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
+
+.scale-item:hover {
+    transform: scale(1.05);
+    border-color: var(--primary-color);
+    box-shadow: 0 0.5rem 1.5rem rgba(13, 110, 253, 0.2);
+    background: linear-gradient(135deg, #ffffff 0%, #dbeafe 100%);
+}
+
+.scale-item .emoji-display {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    line-height: 1;
+}
+
+.scale-item small {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Sección de acción final */
+.intro-action {
+    text-align: center;
+    padding: 3rem;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 0 0 2rem 2rem;
+    position: relative;
+}
+
+.intro-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 3rem;
+    right: 3rem;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%);
+}
+
+/* Botón principal rediseñado */
+.start-survey-btn {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 50%, #0a58ca 100%);
+    color: white;
+    padding: 1.5rem 3rem;
+    border-radius: 3rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    box-shadow: 
+        0 1rem 2rem rgba(13, 110, 253, 0.25),
+        0 0.25rem 0.5rem rgba(13, 110, 253, 0.1);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: none;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    min-width: 320px;
+    position: relative;
+    overflow: hidden;
+}
+
+.start-survey-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.start-survey-btn:hover::before {
+    left: 100%;
+}
+
+.start-survey-btn:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 50%, #084298 100%);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+        0 1.5rem 3rem rgba(13, 110, 253, 0.35),
+        0 0.5rem 1rem rgba(13, 110, 253, 0.2);
+}
+
+.start-survey-btn:active {
+    transform: translateY(-2px) scale(1.01);
+}
+
+.action-note {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.action-note .bi {
+    color: var(--info-color);
+}
+
+/* Layout de dos columnas para el contenido */
+/* Sección antigua removida - usando el nuevo diseño profesional */
+
+/* Mejoras para la escala horizontal */
+.scale-horizontal-container {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);
+}
+
+.scale-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.scale-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+/* ============================================
+   RESPONSIVE DESIGN PARA PANTALLA PRINCIPAL
+   ============================================ */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 992px) {
+    .intro-body {
+        gap: 2.5rem;
+    }
+    
+    .intro-instructions,
+    .evaluation-scale-info {
+        padding: 2rem;
+    }
+    
+    .system-features {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .feature-item {
+        flex-direction: row;
+        text-align: left;
+        padding: 1rem 1.5rem;
+    }
+    
+    .feature-item i {
+        margin-right: 1rem;
+        margin-bottom: 0;
+    }
+}
+
+/* Móviles y pantallas pequeñas */
+@media (max-width: 768px) {
+    .intro-section {
+        padding: 2rem 1.5rem 1.5rem 1.5rem;
+    }
+    
+    #intro-text {
+        margin: 1.5rem auto;
+        border-radius: 1.5rem;
+    }
+    
+    .intro-header h5 {
+        font-size: 1.75rem;
+    }
+    
+    .intro-header .bi-info-circle {
+        font-size: 2rem;
+    }
+    
+    /* Layout de una columna en móviles */
+    .intro-body {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 0 1.5rem;
+    }
+    
+    .intro-instructions,
+    .evaluation-scale-info {
+        padding: 1.5rem;
+    }
+    
+    .intro-instructions .section-title,
+    .evaluation-scale-info .section-title {
+        font-size: 1.25rem;
+    }
+    
+    .system-features {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .feature-item {
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+        padding: 0.75rem 1rem;
+    }
+    
+    .feature-item i {
+        margin-right: 0.75rem;
+        margin-bottom: 0;
+        font-size: 1.5rem;
+    }
+    
+    .scale-horizontal-container {
+        gap: 0.5rem;
+    }
+    
+    .scale-item {
+        padding: 1rem 0.5rem;
+        min-height: 100px;
+    }
+    
+    .scale-item .emoji-display {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .scale-item small {
+        font-size: 0.7rem;
+    }
+    
+    .intro-action {
+        padding: 2rem 1.5rem;
+    }
+    
+    .start-survey-btn {
+        padding: 1.25rem 2rem;
+        font-size: 1.1rem;
+        min-width: 280px;
+        width: 100%;
+        max-width: 350px;
+    }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .intro-section {
+        padding: 1.5rem 1rem 1rem 1rem;
+    }
+    
+    .intro-header h5 {
+        font-size: 1.5rem;
+    }
+    
+    .intro-body {
+        padding: 0 1rem;
+        gap: 1.5rem;
+    }
+    
+    .intro-instructions,
+    .evaluation-scale-info {
+        padding: 1.25rem;
+    }
+    
+    .scale-horizontal-container {
+        gap: 0.25rem;
+    }
+    
+    .scale-item {
+        padding: 0.75rem 0.25rem;
+        min-height: 80px;
+    }
+    
+    .scale-item .emoji-display {
+        font-size: 1.5rem;
+    }
+    
+    .scale-item small {
+        font-size: 0.65rem;
+    }
+    
+    .intro-action {
+        padding: 1.5rem 1rem;
+    }
+    
+    .start-survey-btn {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+/* ============================================
+   MODO OSCURO MEJORADO
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    /* Contenedor principal en modo oscuro */
+    #intro-text {
+        background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #f1f5f9;
+    }
+    
+    #intro-text::before {
+        background: linear-gradient(90deg, 
+            #3b82f6 0%, 
+            #06b6d4 25%, 
+            #8b5cf6 50%, 
+            #06b6d4 75%, 
+            #3b82f6 100%);
+    }
+    
+    /* Header en modo oscuro */
+    .intro-header {
+        border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    .intro-header h5 {
+        color: #e2e8f0;
+    }
+    
+    .intro-header .bi-info-circle {
+        color: #60a5fa;
+    }
+    
+    .intro-subtitle {
+        color: #94a3b8;
+    }
+    
+    /* Columna de instrucciones en modo oscuro */
+    .intro-instructions {
+        background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .intro-instructions::before {
+        background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+    
+    .intro-instructions .section-title {
+        color: #f1f5f9;
+    }
+    
+    .intro-instructions .section-title .bi {
+        color: #60a5fa;
+    }
+    
+    .intro-description {
+        color: #d1d5db;
+    }
+    
+    .feature-item {
+        background: rgba(31, 41, 55, 0.8);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .feature-item:hover {
+        background: rgba(31, 41, 55, 0.95);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+    }
+    
+    .feature-item span {
+        color: #e5e7eb;
+    }
+    
+    /* Columna de escala en modo oscuro */
+    .evaluation-scale-info {
+        background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .evaluation-scale-info::before {
+        background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+    }
+    
+    .evaluation-scale-info .section-title {
+        color: #f1f5f9;
+    }
+    
+    .evaluation-scale-info .section-title .bi {
+        color: #c4b5fd;
+    }
+    
+    /* Escala horizontal en modo oscuro */
+    .scale-item {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border: 2px solid #374151;
+        color: #f9fafb;
+    }
+    
+    .scale-item:hover {
+        border-color: #60a5fa;
+        background: linear-gradient(135deg, #1f2937 0%, #1e3a8a 100%);
+        box-shadow: 0 0.5rem 1.5rem rgba(59, 130, 246, 0.3);
+    }
+    
+    .scale-item small {
+        color: #d1d5db;
+    }
+    
+    /* Sección de acción en modo oscuro */
+    .intro-action {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+    
+    .intro-action::before {
+        background: linear-gradient(90deg, transparent 0%, #60a5fa 50%, transparent 100%);
+    }
+    
+    .action-note {
+        color: #94a3b8;
+    }
+    
+    .action-note .bi {
+        color: #06b6d4;
+    }
+
+    
+    .scale-item:hover {
+        background: rgba(248, 249, 250, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .scale-item small {
+        color: #dee2e6;
+    }
+    
+    /* Botón en modo oscuro */
+    .start-survey-btn {
+        box-shadow: 0 0.5rem 1.5rem rgba(13, 110, 253, 0.4);
+    }
+    
+    .start-survey-btn:hover {
+        box-shadow: 0 0.75rem 2rem rgba(13, 110, 253, 0.5);
+    }
+}
+
+/* ============================================
+   FIN DE ARCHIVO
+   ============================================ */
+
+/* ============================================
+   SECCIÓN DE SELECCIÓN DE CURSO MEJORADA
+   ============================================ */
+
+/* Contenedor específico de selección de curso - COLORES COMO ESCALA DE EVALUACIÓN */
+#step1-course-selection .form-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid var(--header-color);
+    border-radius: var(--border-radius-lg);
+    min-height: 650px; /* Altura mínima adecuada */
+    padding: 3rem;
+    margin: 1.5rem auto;
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.15);
+    width: 90%; /* Ocupa el 90% del ancho de la pantalla en escritorio */
+    max-width: 90vw; /* Máximo 90% del viewport width */
+    position: relative;
+    overflow: hidden;
+    /* PREVENIR ANIMACIONES BRUSCAS */
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Efecto de brillo sutil igual al de la escala */
+#step1-course-selection .form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(44, 62, 80, 0.1), transparent);
+    animation: shine 4s infinite;
+}
+
+/* Título mejorado - MISMOS COLORES QUE ESCALA - SOBRESCRIBIR BOOTSTRAP */
+#step1-course-selection .section-title {
+    color: var(--header-color) !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(44, 62, 80, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    margin: 0 auto 1.5rem auto;
+    max-width: fit-content;
+    border: 2px solid rgba(44, 62, 80, 0.2);
+}
+
+/* Sobrescribir específicamente la clase text-primary de Bootstrap */
+#step1-course-selection .section-title.text-primary {
+    color: var(--header-color) !important;
+}
+
+/* Icono del título de selección de curso igual que la escala */
+#step1-course-selection .section-title i {
+    color: var(--header-color);
+    filter: drop-shadow(0 1px 2px rgba(44,62,80,0.10));
+}
+
+/* Label del formulario más prominente */
+#step1-course-selection .form-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--header-color);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Select mejorado - COLORES ARMONIZADOS */
+#step1-course-selection .form-select {
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--header-color);
+    border-radius: var(--border-radius-lg);
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
+    transition: all 0.3s ease;
+}
+
+#step1-course-selection .form-select:focus {
+    border-color: var(--header-color);
+    box-shadow: 0 0 0 0.25rem rgba(44, 62, 80, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Placeholder del select con color más visible y coherente */
+#step1-course-selection .form-select {
+    color: var(--header-color);
+}
+#step1-course-selection .form-select option[value=""] {
+    color: #b0b4b9;
+    font-style: italic;
+}
+
+/* Flecha del select personalizada (solo para navegadores modernos) */
+#step1-course-selection .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' stroke='%232c3e50' stroke-width='2' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.25rem center;
+    background-size: 1.25em 1.25em;
+    padding-right: 2.5rem;
+}
+
+/* Mejorar contraste del texto seleccionado en el select */
+#step1-course-selection .form-select:focus {
+    color: var(--header-color);
+    background-color: #fff;
+}
+
+/* Para navegadores que no soportan background-image en select, fallback: */
+#step1-course-selection .form-select::-ms-expand {
+    color: var(--header-color);
+}
+
+/* Grupo del formulario con más espacio */
+#step1-course-selection .form-group {
+    margin-bottom: 1.5rem; /* Espacio más equilibrado */
+}
+
+/* Botón de comenzar encuesta mejorado */
+#step1-course-selection .submit-btn {
+    font-size: 1.2rem;
+    padding: 1.25rem 2.5rem;
+    background: linear-gradient(135deg, #146c43 0%, #0f5132 100%);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+    transition: all 0.3s ease;
+}
+
+#step1-course-selection .submit-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #146c43 0%, #0f5132 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.4);
+}
+
+#step1-course-selection .submit-btn:disabled {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    transform: none;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
+    cursor: not-allowed;
+}
+
+/* Alert de información de profesores mejorado - COLORES CONSISTENTES */
+#profesoresInfo {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid var(--header-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
+}
+
+#profesoresInfo h6 {
+    color: var(--header-color);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* ============================================
+   ICONOS - Solo mantener esto
+   ============================================ */
+
+.bi.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.bi.text-warning {
+    color: #fd7e14 !important;
+}
+
+/* Corrección para text-muted - mejor legibilidad */
+.text-muted {
+    color: #6c757d !important;
+    opacity: 0.8;
+}
+
+/* ============================================
+   CORRECCIÓN SIMPLE Y DEFINITIVA - SPAN BLANCO
+   ============================================ */
+
+/* El span del curso debe verse BLANCO siempre */
+#courseTitle {
+    color: white !important;
+    font-weight: 600 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Los demás elementos text-primary se mantienen con color normal */
+.text-primary:not(#courseTitle) {
+    color: var(--primary-color) !important;
+}
+
+/* ============================================
+   FIN CORRECCIONES
+   ============================================ */
