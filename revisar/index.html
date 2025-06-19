@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Encuestas Académicas</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- CSS personalizado -->
+    <link href="assets/css/main.css?v=20250613009" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-primary text-white py-4 mb-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="h3 mb-0"><i class="bi bi-clipboard-data"></i> Sistema de Encuestas Académicas</h1>
+                    <p class="mb-0 text-white-50">Evaluación de Cursos y Profesores</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <small class="text-white-50">Encuesta Anónima</small>
+                </div>
+            </div>
+        </div>
+    </header>    <!-- Main Content -->
+    <main class="survey-container">
+        <!-- Alertas -->
+        <div id="alertContainer"></div>
+
+        <!-- Botón de inicio prominente -->
+        <button id="start-form-btn" class="start-survey-btn" style="margin-bottom:20px;">Comenzar Encuesta Académica</button>
+
+        <!-- Información de la encuesta con estilo del formulario adaptado -->
+        <div id="intro-text" class="mb-4 text-center">
+            <div class="intro-section">
+                <div class="intro-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Instrucciones
+                    </h5>
+                </div>
+                <div class="intro-body">
+                    <p class="intro-description">
+                        El <strong>SISTEMA DE ENCUESTAS ACADÉMICAS</strong> está implicado en un proceso de mejora continua en la calidad del servicio que ofrece a sus estudiantes, de ahí que es importante para nosotros conocer su grado de satisfacción. Rogamos, por tanto, tengan la amabilidad de responder a las siguientes cuestiones.
+                    </p>                    <!-- Escala de valores con diseño mejorado -->
+                    <div class="evaluation-scale-info">
+                        <h6>ESCALA DE EVALUACIÓN</h6>
+                        <div class="scale-horizontal-container">
+                            <div class="scale-item-wrapper">
+                                <div class="scale-item">
+                                    <span class="emoji-display">😃</span>
+                                    <small>Excelente</small>
+                                </div>
+                            </div>
+                            <div class="scale-item-wrapper">
+                                <div class="scale-item">
+                                    <span class="emoji-display">🙂</span>
+                                    <small>Bueno</small>
+                                </div>
+                            </div>
+                            <div class="scale-item-wrapper">
+                                <div class="scale-item">
+                                    <span class="emoji-display">😐</span>
+                                    <small>Correcto</small>
+                                </div>
+                            </div>
+                            <div class="scale-item-wrapper">
+                                <div class="scale-item">
+                                    <span class="emoji-display">😕</span>
+                                    <small>Regular</small>
+                                </div>
+                            </div>
+                            <div class="scale-item-wrapper">
+                                <div class="scale-item">
+                                    <span class="emoji-display">😞</span>
+                                    <small>Deficiente</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de encuesta -->
+        <div id="form-container" style="display:none;">
+            <form id="surveyForm" class="needs-validation" novalidate>            <!-- PASO 1: Selección de Curso -->
+            <div id="step1-course-selection" class="survey-step">
+                <div class="form-section">
+                    <h2 class="section-title text-center text-primary mb-4">
+                        <i class="bi bi-book"></i> Selección de Curso
+                    </h2>
+                    
+                    <div class="form-group mb-4">
+                        <label for="formulario_id" class="form-label fw-bold">Formulario/Curso *</label>
+                        <select class="form-select form-select-lg" id="formulario_id" name="formulario_id" required>
+                            <option value="">Seleccione un curso...</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione un curso.
+                        </div>
+                        <div id="formularioInfo" class="form-text"></div>
+                    </div>
+                    
+                    <!-- Información de profesores a evaluar -->
+                    <div id="profesoresInfo" class="alert alert-info rounded-3" style="display: none;">
+                        <h6><i class="bi bi-info-circle"></i> Profesores a evaluar:</h6>
+                        <div id="profesoresList"></div>
+                        <small class="text-muted mt-2 d-block">Se evaluará el curso y luego cada profesor por separado.</small>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button type="button" class="submit-btn" id="startSurveyBtn" disabled>
+                            <i class="bi bi-play-circle"></i> Comenzar Encuesta
+                        </button>
+                    </div>
+                </div>
+            </div>            <!-- PASO 2: Barra de Progreso -->
+            <div id="progressBar" class="progress-section mb-4" style="display: none;">
+                <div class="progress-container">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 text-primary fw-bold">Progreso de la Encuesta</h6>
+                        <span id="progressText" class="badge bg-primary fs-6">Paso 1 de 3</span>
+                    </div>
+                    <div class="progress progress-lg">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                             role="progressbar" id="progressBarFill" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block text-center" id="currentStepText">Evaluando el curso</small>
+                </div>
+            </div>
+
+            <!-- PASO 3: Evaluación del Curso -->
+            <div id="step2-course-evaluation" class="survey-step" style="display: none;">
+                <div class="evaluation-section">
+                    <h2 class="section-title text-center mb-4">
+                        <i class="bi bi-list-check"></i> 
+                        EVALUACIÓN DEL CURSO: <span id="courseTitle" class="text-primary"></span>
+                    </h2>
+                    
+                    <div id="courseQuestions" class="questions-container">
+                        <!-- Las preguntas del curso se cargarán aquí dinámicamente -->
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button type="button" class="submit-btn" id="nextToProfessorsBtn">
+                            <i class="bi bi-arrow-right"></i> Continuar con Profesores
+                        </button>
+                    </div>
+                </div>
+            </div>            <!-- PASO 4: Evaluación de Profesores -->
+            <div id="step3-professor-evaluation" class="survey-step" style="display: none;">
+                <div class="evaluation-section">                    <h2 class="section-title text-center mb-4">
+                        <i class="bi bi-person-badge"></i> 
+                        EVALUACIÓN DEL PROFESOR: <span id="professorTitle" class="text-warning"></span>
+                        <small class="d-block text-white fs-6 mt-1" id="professorCounter">Profesor 1 de 1</small>
+                    </h2>
+                    
+                    <div id="professorQuestions" class="questions-container">
+                        <!-- Las preguntas del profesor se cargarán aquí dinámicamente -->
+                    </div>
+                    
+                    <div class="navigation-buttons text-center mt-4">
+                        <button type="button" class="btn btn-outline-primary me-3" id="prevProfessorBtn" style="display: none;">
+                            <i class="bi bi-arrow-left"></i> Profesor Anterior
+                        </button>
+                        <button type="button" class="submit-btn" id="nextProfessorBtn">
+                            <i class="bi bi-arrow-right"></i> Siguiente Profesor
+                        </button>
+                        <button type="submit" class="submit-btn submit-btn-final" id="submitBtn" style="display: none;">
+                            <i class="bi bi-send"></i> Enviar Encuesta Completa
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de reinicio -->
+            <div class="text-center mt-4" id="resetSection" style="display: none;">
+                <button type="button" class="btn btn-outline-secondary" id="resetForm">
+                    <i class="bi bi-arrow-clockwise"></i> Reiniciar Encuesta
+                </button>
+            </div>
+        </div>
+        </form>
+
+        <!-- Loading overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2">Procesando encuesta...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-0">&copy; 2025 Sistema de Encuestas Académicas. Todos los derechos reservados.</p>
+            <small class="text-muted">Desarrollado con PHP 8.3, MySQL 9.1 y Bootstrap 5 </small>
+        </div>
+    </footer>    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>    <!-- JavaScript personalizado CORREGIDO -->
+    <script src="assets/js/survey_fixed.js?v=20250613010"></script>
+    <script>
+        console.log('✅ JavaScript corregido cargado v20250613002 - TRANSICIONES SUAVES MEJORADAS - ' + new Date().toLocaleTimeString());
+    </script>
+</body>
+</html>

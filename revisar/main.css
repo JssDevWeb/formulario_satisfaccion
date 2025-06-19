@@ -1,0 +1,1844 @@
+/* ============================================
+   SISTEMA DE ENCUESTAS ACADÉMICAS - CSS OPTIMIZADO
+   Diseño mejorado, responsivo y equilibrado
+   ============================================ */
+
+/* Variables CSS mejoradas */
+:root {
+    /* Colores principales - HEADER ARMONIOSO */
+    --primary-color: #0d6efd;
+    --primary-light: #6ea8fe;
+    --primary-dark: #0a58ca;
+    --header-color: #2c3e50; /* Color más neutro y profesional */
+    --header-light: #34495e;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    
+    /* Colores de fondo */
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: #ffffff;
+    --table-bg: #ffffff;
+    --hover-bg: #f8f9fa;
+    
+    /* Espaciado y bordes */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 1rem;
+    --border-radius-sm: 0.25rem;
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --box-shadow-lg: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    --box-shadow-hover: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Tipografía */
+    --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.125rem;
+    --line-height: 1.5;
+    
+    /* Breakpoints */
+    --mobile: 768px;
+    --tablet: 992px;
+    --desktop: 1200px;
+}
+
+/* Reset mejorado */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Base del documento */
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    color: var(--dark-color);
+    background: var(--bg-gradient);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* FOOTER STICKY - Estructura flexbox para mantener footer abajo */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   COMPONENTES BASE
+   ============================================ */
+
+/* Cards mejoradas */
+.card {
+    background: var(--card-bg);
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--box-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Formularios optimizados */
+.form-control,
+.form-select {
+    border: 2px solid #e9ecef;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+    background-color: #fff;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    outline: none;
+}
+
+.form-control:invalid {
+    border-color: var(--danger-color);
+}
+
+.form-control:valid {
+    border-color: var(--success-color);
+}
+
+/* ============================================
+   PLACEHOLDERS PERSONALIZADOS
+   ============================================ */
+
+/* Estilo general para placeholders */
+.form-control::placeholder,
+textarea.form-control::placeholder {
+    color: #6c757d; /* Color gris suave */
+    opacity: 0.8;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* Placeholder específico para comentarios/textarea */
+textarea[name*="professor_"]::placeholder,
+.comments-section textarea::placeholder {
+    color: #0dcaf0; /* Color azul info */
+    opacity: 0.9;
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* Hover en el placeholder */
+.form-control:hover::placeholder {
+    color: var(--primary-color);
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+/* Focus en el placeholder */
+.form-control:focus::placeholder {
+    color: var(--primary-light);
+    opacity: 0.6;
+}
+
+/* Modo oscuro - placeholders */
+@media (prefers-color-scheme: dark) {
+    .form-control::placeholder,
+    textarea.form-control::placeholder {
+        color: #adb5bd;
+        opacity: 0.8;
+    }
+    
+    textarea[name*="professor_"]::placeholder,
+    .comments-section textarea::placeholder {
+        color: #74c0fc;
+        opacity: 0.9;
+    }
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL DEL SURVEY
+   ============================================ */
+
+.survey-container {
+    max-width: 95%; /* Aprovechar más espacio de la pantalla */
+    width: 95%;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: transparent;
+    /* Contribuye al layout flexbox */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   SECCIONES DEL FORMULARIO
+   ============================================ */
+
+.form-section,
+.evaluation-section {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 3rem;
+    margin: 1.5rem auto;
+    width: 90%; /* Ocupa el 90% del ancho de la pantalla en escritorio */
+    max-width: 90vw; /* Máximo 90% del viewport width */
+    min-width: min-content; /* Asegura espacio mínimo para el contenido */
+    box-shadow: var(--box-shadow-lg);
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    min-height: 650px; /* Altura mínima adecuada */
+    transition: all 0.3s ease-in-out;
+}
+
+.evaluation-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.evaluation-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, #0b5ed7 50%, var(--primary-color) 100%);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+.section-title {
+    font-size: 1.5rem; /* Tamaño más equilibrado */
+    font-weight: 700;
+    margin-bottom: 1.5rem; /* Espacio reducido */
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--dark-color);
+}
+
+.evaluation-section .section-title {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    margin: -3rem -3rem 2rem -3rem;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    border-bottom: none;
+    position: relative;
+}
+
+.evaluation-section .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 10px solid #0b5ed7;
+}
+
+/* ============================================
+   ESCALA DE EVALUACIÓN HORIZONTAL - VERSIÓN LIMPIA FINAL
+   ============================================ */
+
+/* Información de la escala - Solo estilos necesarios */
+.evaluation-scale-info {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #2c3e50;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 1.5rem auto;
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.15);
+    width: 90%;
+    max-width: 90vw;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Título de la escala */
+.evaluation-scale-info h6 {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(44, 62, 80, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    margin: 0 auto 1.5rem auto;
+    max-width: fit-content;
+    border: 2px solid rgba(44, 62, 80, 0.2);
+}
+
+/* Container principal de la escala - HORIZONTAL FIJO */
+.scale-horizontal-container {
+    display: flex !important; /* Necesario para anular cualquier display de Bootstrap */
+    justify-content: center;
+    align-items: stretch;
+    flex-direction: row !important; /* Crítico para mantener horizontal */
+    flex-wrap: nowrap !important; /* Crítico para evitar wrapping */
+    gap: 0.5rem;
+    margin: 0 auto;
+    width: auto;
+    min-width: min-content;
+    position: relative;
+    float: none;
+}
+
+/* Wrapper de cada elemento de la escala */
+.scale-item-wrapper {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: auto;
+    max-width: none;
+    float: none;
+    position: relative;
+    width: auto;
+}
+
+/* Elemento individual de la escala */
+.scale-item {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #2c3e50;
+    border-radius: 15px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
+    position: relative;
+    overflow: hidden;
+    min-width: 90px;
+    max-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+}
+
+.scale-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
+    background: rgba(255, 255, 255, 1);
+    border-color: #0d6efd;
+}
+
+/* Emojis de la escala */
+.emoji-display {
+    font-size: 1.2rem; /* Más pequeño para coincidir con la imagen */
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    display: block;
+    height: 1.2rem;
+    width: 1.2rem;
+    text-align: center;
+}
+
+/* Texto de la escala */
+.scale-item small {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+/* RESPONSIVE - MÓVIL */
+@media (max-width: 768px) {
+    .scale-horizontal-container {
+        gap: 0.25rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding: 0;
+        flex-direction: row !important; /* Mantener para asegurar horizontal */
+        display: flex !important; /* Mantener para anular posibles cambios */
+        flex-wrap: nowrap !important; /* Crítico para evitar wrapping */
+        width: auto;
+    }
+    
+    .scale-item-wrapper {
+        flex: 0 0 auto;
+        min-width: auto;
+        max-width: none;
+        display: flex;
+        float: none;
+        width: auto;
+    }
+    
+    .scale-item {
+        padding: 0.75rem 0.5rem;
+        max-width: none;
+        min-width: auto;        display: block;
+        min-width: 80px;
+        max-width: 95px;
+    }
+      .emoji-display {
+        font-size: 1.0rem; /* Ajustado para tablet */
+        height: 1.0rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .scale-item small {
+        font-size: 0.7rem;
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .scale-horizontal-container {
+        gap: 0.125rem;
+    }
+    
+    .scale-item-wrapper {
+        min-width: 70px;
+        max-width: 85px;
+    }
+    
+    .scale-item {
+        padding: 0.5rem 0.25rem;
+        max-width: 80px;
+        min-width: 65px;
+    }
+      .emoji-display {
+        font-size: 0.8rem; /* Ajustado para móvil pequeño */
+        height: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .scale-item small {
+        font-size: 0.65rem;
+        line-height: 1.1;
+    }
+}
+
+/* ============================================
+   TABLA DE EVALUACIÓN
+   ============================================ */
+
+.evaluation-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--box-shadow-lg);
+    margin: 1.5rem auto;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+}
+
+.evaluation-table th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: var(--dark-color);
+    font-weight: 700;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    border: none;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(13, 110, 253, 0.1);
+}
+
+.evaluation-table th:first-child {
+    text-align: left;
+    padding-left: 1.5rem;
+    min-width: 250px;
+    text-transform: none;
+    font-size: var(--font-size-base);
+}
+
+/* Headers específicos con emojis - texto arriba, emoji grande */
+.evaluation-table th.emoji-header {
+    vertical-align: top !important; /* Bootstrap anula esto, necesario */
+    padding: 0.5rem 0.75rem 1.5rem 0.75rem !important; /* Bootstrap tiene padding específico */
+    font-size: 0.85rem;
+    line-height: 1.2;
+    text-transform: none !important; /* Bootstrap pone uppercase por defecto */
+    position: relative;
+    height: 80px !important; /* Asegurar altura específica */
+    text-align: center;
+}
+
+/* Separar texto y emoji en headers */
+.evaluation-table th.emoji-header::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.0rem; /* Más pequeño para coincidir con la imagen */
+    line-height: 1;
+}
+
+/* Emojis específicos para cada header */
+.evaluation-table th.emoji-header:nth-child(2)::after { content: '😃'; }
+.evaluation-table th.emoji-header:nth-child(3)::after { content: '🙂'; }
+.evaluation-table th.emoji-header:nth-child(4)::after { content: '😐'; }
+.evaluation-table th.emoji-header:nth-child(5)::after { content: '😕'; }
+.evaluation-table th.emoji-header:nth-child(6)::after { content: '😞'; }
+
+.evaluation-table td {
+    padding: 1rem 0.75rem;
+    border: none;
+    border-bottom: 1px solid rgba(13, 110, 253, 0.05);
+    text-align: center;
+    vertical-align: middle;
+    transition: var(--transition);
+}
+
+.evaluation-table td:first-child {
+    text-align: left;
+    padding-left: 1.5rem;
+    font-weight: 500;
+    color: var(--dark-color);
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.8) 0%, rgba(233, 236, 239, 0.3) 100%);
+    border-right: 2px solid rgba(13, 110, 253, 0.1);
+}
+
+.evaluation-table tr:hover td {
+    background-color: rgba(13, 110, 253, 0.05);
+    transform: scale(1.01);
+}
+
+.evaluation-table tr:hover td:first-child {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+}
+
+.evaluation-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ============================================
+   CELDAS DE EMOJI
+   ============================================ */
+
+.emoji-cell {
+    position: relative;
+    cursor: pointer;
+    min-width: 80px;
+    min-height: 60px;
+    transition: var(--transition);
+    user-select: none;
+    border-radius: var(--border-radius);
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.3) 0%, rgba(233, 236, 239, 0.1) 100%);
+}
+
+.emoji-cell:hover {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    border: 2px solid rgba(13, 110, 253, 0.3);
+}
+
+.emoji-cell.selected {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.emoji-cell.selected:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #084298 100%);
+    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.5);
+}
+
+.emoji-cell input[type="radio"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+}
+
+.emoji-cell::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(33, 37, 41, 0.95) 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    pointer-events: none;
+    z-index: 20;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.emoji-cell:hover::after {
+    opacity: 1;
+}
+
+/* Estilos para emojis dinámicos */
+.emoji-only {
+    font-size: 2rem;
+    display: block;
+    text-align: center;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+    margin: 0.25rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Mejorar renderizado de emojis */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Emoji visible solo cuando la celda está seleccionada */
+.emoji-cell.selected .emoji-only {
+    display: block;
+}
+
+/* Por defecto oculto */
+.emoji-cell .emoji-only {
+    display: none;
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: var(--transition);
+    border: none;
+    font-size: var(--font-size-base);
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    box-shadow: var(--box-shadow);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #084298 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.start-survey-btn {
+    background: linear-gradient(135deg, var(--success-color) 0%, #146c43 100%);
+    color: white;
+    padding: 1.25rem 2.5rem;
+    border-radius: var(--border-radius-lg);
+    font-size: 1.25rem;
+    font-weight: 700;
+    box-shadow: var(--box-shadow-lg);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    /* CENTRADO MEJORADO */
+    display: block;
+    margin: 0 auto 2rem auto;
+    text-align: center;
+}
+
+.start-survey-btn:hover {
+    background: linear-gradient(135deg, #146c43 0%, #0f5132 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 0.75rem 2rem rgba(25, 135, 84, 0.3);
+}
+
+/* ============================================
+   VALIDACIÓN Y ERRORES
+   ============================================ */
+
+.missing-answer {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important;
+    border: 2px solid var(--danger-color) !important;
+    animation: shake 0.6s ease-in-out;
+}
+
+.missing-answer td {
+    border-color: var(--danger-color) !important;
+}
+
+.border-danger {
+    border-color: var(--danger-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    animation: shake 0.6s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    50% { transform: translateX(8px); }
+    75% { transform: translateX(-8px); }
+}
+
+/* ============================================
+   COMENTARIOS
+   ============================================ */
+
+.comments-section {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--box-shadow-lg);
+    border: 2px solid var(--info-color);
+}
+
+.comments-section textarea {
+    border: 2px solid var(--info-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    resize: vertical;
+    min-height: 120px;
+    transition: var(--transition);
+}
+
+.comments-section textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* ============================================
+   CONTADOR DE CARACTERES
+   ============================================ */
+
+.char-counter {
+    font-size: 0.75rem;
+    color: #6c757d;                    /* ← CAMBIAR ESTE COLOR */
+    font-weight: 500;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.char-counter.warning {
+    color: #ffc107;                    /* ← AMARILLO CUANDO SE ACERCA AL LÍMITE */
+}
+
+.char-counter.danger {
+    color: #dc3545;                    /* ← ROJO CUANDO EXCEDE */
+}
+
+/* ============================================
+   INDICADORES DE PROGRESO
+   ============================================ */
+
+.progress-container {
+    margin: 2rem 0;
+    padding: 0 1rem;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 20px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    transition: width 0.6s ease;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Escritorio grande - 90% del ancho */
+@media (min-width: 1200px) {
+    .form-section,
+    .evaluation-section,
+    #step1-course-selection .form-section {
+        width: 90%;
+        max-width: 90vw;
+    }
+    
+    .survey-container {
+        max-width: 95%;
+        width: 95%;
+    }
+    
+    .evaluation-scale-info {
+        width: 90%;
+        max-width: 90vw;
+    }
+    
+    #intro-text {
+        width: 90%;
+        max-width: 90vw;
+    }
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+    .survey-container {
+        padding: 1.5rem 0.75rem;
+    }    .form-section,
+    .evaluation-section {
+        padding: 1.5rem 1.25rem;
+        margin: 1rem auto;
+        max-width: 700px;
+        min-height: 420px; /* Proporcional al aumento en desktop */
+    }
+    
+    /* Sección de selección de curso en tablets */
+    #step1-course-selection .form-section {
+        min-height: 420px; /* Altura consistente con la general */
+        padding: 1.75rem 1.5rem;
+    }
+    
+    /* Intro text también debe tener altura consistente en tablets */
+    #intro-text {
+        min-height: 420px !important; /* Altura consistente */
+        padding: 1.75rem 1.5rem !important;
+        margin: 1rem auto !important;
+        max-width: 700px !important;
+    }
+      #intro-text.fadeOut {
+        height: 420px; /* Altura fija durante transición */
+        min-height: 420px;
+    }
+    
+    #step1-course-selection .section-title {
+        font-size: 1.5rem; /* Tamaño equilibrado */
+    }
+      .evaluation-table th,
+    .evaluation-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Headers emoji responsivos para tablets */
+    .evaluation-table th.emoji-header {
+        height: 70px !important; /* Bootstrap puede anular altura */
+        padding: 0.4rem 0.5rem 1.25rem 0.5rem !important; /* Bootstrap tiene padding específico */
+        font-size: 0.8rem;
+    }      .evaluation-table th.emoji-header::after {
+        bottom: 6px;
+        font-size: 0.9rem; /* Ajustado para tablet */    }.emoji-display {
+        font-size: 0.9rem; /* Ajustado para tablet */
+    }
+    
+    .scale-item {
+        padding: 0.75rem;
+        max-width: 120px;
+    }
+    
+    /* Centrado en tablets */
+    .evaluation-scale-info {
+        max-width: 800px !important;
+        margin: 1rem auto !important;
+    }
+    
+    .evaluation-scale-info .row.g-2.text-center {
+        justify-content: center !important;
+    }
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+    .survey-container {
+        padding: 1rem 0.5rem;
+    }    .form-section,
+    .evaluation-section {
+        padding: 1.25rem;
+        margin: 0.75rem 0;
+        border-radius: var(--border-radius);
+        min-height: 380px; /* Altura ajustada para móviles */
+    }
+    
+    #step1-course-selection .form-section {
+        min-height: 380px; /* Altura consistente en móviles */
+        padding: 1.5rem 1.25rem;
+    }
+      /* Intro text altura consistente en móviles */
+    #intro-text {
+        min-height: 380px; /* Altura consistente */
+        padding: 1.5rem 1.25rem;
+        margin: 0.75rem 0;
+    }
+    
+    #intro-text.fadeOut {
+        height: 380px; /* Altura fija durante transición */
+        min-height: 380px;
+        margin: 0.75rem 0; /* Mantener márgenes */
+    }
+    
+    #step1-course-selection .section-title {
+        font-size: 1.3rem; /* Tamaño apropiado para móviles */
+        margin-bottom: 1.25rem;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }      .evaluation-scale-info {
+        padding: 1rem;
+        margin: 1rem auto !important;
+    max-width: 100% !important;
+    }
+    
+    .scale-item {
+        padding: 0.75rem 0.5rem;
+        margin-bottom: 0.5rem;
+        min-height: 80px;
+    }      .emoji-display {
+        font-size: 0.9rem; /* Ajustado para móvil */
+        margin-bottom: 0.5rem;
+        height: 0.9rem; /* Ajustado para móvil */
+    }
+      .scale-item small {
+        font-size: 0.8rem;
+    }
+      /* Headers emoji responsivos para móviles */
+    .evaluation-table th.emoji-header {
+        height: 60px !important; /* Bootstrap puede anular altura en móvil */
+        padding: 0.25rem 0.5rem 1rem 0.5rem !important; /* Bootstrap tiene padding específico */
+        font-size: 1rem;
+    }      .evaluation-table th.emoji-header::after {
+        bottom: 5px;
+        font-size: 0.8rem; /* Ajustado para móvil */
+    }
+    
+    /* Tabla responsiva para móviles */
+    .evaluation-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .evaluation-table thead {
+        display: none;
+    }
+    
+    .evaluation-table,
+    .evaluation-table tbody,
+    .evaluation-table tr,
+    .evaluation-table td {
+        display: block;
+        width: 100%;
+    }
+    
+    .evaluation-table tr {
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: var(--card-bg);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .evaluation-table td {
+        border: none;
+        padding: 0.5rem 0;
+        text-align: left;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .evaluation-table td:first-child {
+        font-weight: 700;
+        background: none;
+        padding: 0 0 1rem 0;
+        font-size: var(--font-size-lg);
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .evaluation-table td:not(:first-child) {
+        border-radius: var(--border-radius);
+        margin-bottom: 0.5rem;
+        padding: 0.75rem;
+        background: var(--hover-bg);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .evaluation-table td:not(:first-child):hover {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    }
+    
+    .evaluation-table td:not(:first-child)::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--dark-color);
+        min-width: 100px;
+    }
+    
+    .evaluation-table .emoji-cell::before {
+        content: attr(data-label);
+    }
+    
+    .evaluation-table .emoji-cell.selected {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        transform: none;
+    }
+    
+    .evaluation-table .emoji-cell.selected::before {
+        color: white;
+    }
+    
+    .evaluation-table .emoji-cell::after {
+        display: none;
+    }
+    
+    .emoji-cell input[type="radio"] {
+        position: static;
+        width: auto;
+        height: auto;
+        opacity: 1;
+    }
+    
+    /* Botones responsivos */
+    .submit-btn,
+    .start-survey-btn {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+        display: block;
+        padding: 1rem;
+        font-size: var(--font-size-base);
+    }
+    
+    .comment-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .comment-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    /* Comentarios responsivos */
+    .comments-section {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .comments-section textarea {
+        font-size: 16px; /* Evita zoom en iOS */
+    }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+    .survey-container {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .form-section,
+    .evaluation-section {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+    }
+      .evaluation-scale-info {
+        padding: 0.75rem;
+    }
+    
+    .scale-item {
+        padding: 0.5rem;
+    }      .emoji-display {
+        font-size: 0.7rem; /* Ajustado para móvil pequeño */
+    }
+    
+    .comments-section {
+        padding: 0.75rem;
+    }
+}
+
+/* ============================================
+   ESTADOS ESPECIALES
+   ============================================ */
+
+/* Filas respondidas */
+.evaluation-table tr.answered td:first-child {
+    border-left: 4px solid var(--success-color);
+    background: linear-gradient(90deg, rgba(25, 135, 84, 0.1) 0%, transparent 100%);
+}
+
+/* Filas destacadas */
+.highlighted-row {
+    background: linear-gradient(90deg, #fff3cd 0%, #fffde7 100%);
+}
+
+.highlighted-row td {
+    border-top: 2px solid var(--warning-color);
+    border-bottom: 2px solid var(--warning-color);
+}
+
+/* Siguiente pregunta */
+.next-question-highlight {
+    box-shadow: inset 4px 0 8px -2px var(--primary-color);
+    background: linear-gradient(90deg, rgba(13, 110, 253, 0.05) 0%, transparent 100%);
+}
+
+.next-question-highlight td:first-child::before {
+    content: '➤';
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    animation: point-right 1.5s infinite ease-in-out;
+}
+
+@keyframes point-right {
+    0%, 100% { transform: translateY(-50%) translateX(0); }
+    50% { transform: translateY(-50%) translateX(5px); }
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.d-none { display: none; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+
+.justify-content-center { justify-content: center; }
+.align-items-center { align-items: center; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }
+
+/* ============================================
+   HEADER PERSONALIZADO
+   ============================================ */
+
+/* Sobrescribir header de Bootstrap con color armonioso */
+header.bg-primary {
+    background: linear-gradient(135deg, var(--header-color) 0%, var(--header-light) 100%) !important;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+    border-bottom: none;
+}
+
+header.bg-primary h1 {
+    font-weight: 700;
+    font-size: 1.75rem;
+}
+
+header.bg-primary .text-white-50 {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ============================================
+   LAYOUT PRINCIPAL - FOOTER STICKY
+   ============================================ */
+
+/* Main content debe ocupar todo el espacio disponible */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Footer siempre en la parte inferior */
+footer {
+    margin-top: auto;
+    background: linear-gradient(135deg, var(--header-color) 0%, #1a252f 100%) !important;
+    color: white !important;
+    padding: 2rem 0;
+    box-shadow: 0 -0.25rem 1rem rgba(44, 62, 80, 0.3);
+    border-top: 3px solid var(--primary-color);
+}
+
+footer p {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+footer small {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Sobrescribir específicamente las clases de Bootstrap en el footer */
+footer.bg-dark {
+    background: linear-gradient(135deg, var(--header-color) 0%, #1a252f 100%) !important;
+}
+
+footer .text-muted {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Para dispositivos móviles - footer más compacto */
+@media (max-width: 768px) {
+    footer {
+        padding: 1.5rem 0;
+        text-align: center;
+    }
+    
+    footer .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    footer p {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        color: white !important;
+    }
+    
+    footer small {
+        font-size: 1rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.98) !important;
+    }
+    
+    /* Sobrescribir Bootstrap en móviles también */
+    footer .text-muted {
+        color: rgba(255, 255, 255, 0.98) !important;
+    }
+}
+
+/* ============================================
+   SOBRESCRITURA ESPECÍFICA DE BOOTSTRAP PARA FOOTER
+   ============================================ */
+
+/* Máxima especificidad para sobrescribir Bootstrap */
+footer.bg-dark.text-white .container p.mb-0 {
+    color: white !important;
+    font-weight: 600 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+footer.bg-dark.text-white .container small.text-muted {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Asegurar que el footer tenga el color correcto */
+footer.bg-dark.text-white.text-center.py-3.mt-5 {
+    background: linear-gradient(135deg, var(--header-color) 0%, #1a252f 100%) !important;
+    border-top: 3px solid var(--primary-color) !important;
+    box-shadow: 0 -0.25rem 1rem rgba(44, 62, 80, 0.3) !important;
+}
+
+/* ============================================
+   FIN SOBRESCRITURA BOOTSTRAP
+   ============================================ */
+
+/* ============================================
+   MODO OSCURO (OPCIONAL)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dark-color: #f8f9fa;
+        --light-color: #212529;
+        --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+        --card-bg: #2d3748;
+        --table-bg: #2d3748;
+        --hover-bg: #4a5568;
+    }
+    
+    body {
+        background: var(--bg-gradient);
+        color: var(--dark-color);
+    }
+    
+    .card {
+        background: var(--card-bg);
+        color: var(--dark-color);
+    }
+    
+    .evaluation-table {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .evaluation-table th {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        color: var(--dark-color);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .evaluation-table td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .evaluation-table td:first-child {
+        background: linear-gradient(135deg, rgba(74, 85, 104, 0.5) 0%, rgba(45, 55, 72, 0.3) 100%);
+        border-right: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .evaluation-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .evaluation-table tr:hover td:first-child {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    }
+    
+    .emoji-cell {
+        background: linear-gradient(135deg, rgba(74, 85, 104, 0.3) 0%, rgba(45, 55, 72, 0.1) 100%);
+    }
+    
+    .emoji-cell:hover {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .emoji-cell.selected {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+      .emoji-cell.selected:hover {
+        background: linear-gradient(135deg, #0b5ed7 0%, #084298 100%);
+        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+    }
+    
+    .evaluation-section .section-title {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        color: white;
+    }
+    
+    .evaluation-section .section-title::after {
+        border-top-color: #0b5ed7;
+    }
+      .emoji-cell::after {
+        background: linear-gradient(135deg, rgba(45, 55, 72, 0.95) 0%, rgba(26, 26, 26, 0.98) 100%);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }    /* Correcciones de colores Bootstrap para modo oscuro - SOLO ICONOS */
+    .bi.text-primary {
+        color: #66b3ff !important;
+    }
+    
+    .bi.text-warning {
+        color: #ffb366 !important;
+    }
+    
+    /* Asegurar que otros elementos text-* también sean visibles */
+    .text-success {
+        color: #51cf66 !important;
+    }
+    
+    .text-danger {
+        color: #ff6b6b !important;
+    }
+      .text-info {
+        color: #74c0fc !important;
+    }
+    
+    /* Corrección para text-muted en modo oscuro */
+    .text-muted {
+        color: #adb5bd !important;
+        opacity: 0.9;
+    }
+    
+    .form-control,
+    .form-select {
+        background-color: var(--card-bg);
+        color: var(--dark-color);
+        border-color: #4a5568;
+    }
+    
+    .comments-section textarea {
+        background-color: var(--card-bg);
+        color: var(--dark-color);
+    }
+}
+
+/* ============================================
+   ANIMACIONES ADICIONALES
+   ============================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.form-section,
+.evaluation-section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.evaluation-table tr {
+    animation: slideInLeft 0.4s ease-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.evaluation-table tr:nth-child(even) {
+    animation-delay: 0.1s;
+}
+
+.evaluation-table tr:nth-child(odd) {
+    animation-delay: 0.2s;
+}
+
+/* Mejorar la fila cuando está siendo respondida */
+.evaluation-table tr.answered {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.03) 0%, rgba(13, 110, 253, 0.01) 100%);
+    border-left: 4px solid var(--primary-color);
+}
+
+.evaluation-table tr.missing-answer {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.05) 0%, rgba(220, 53, 69, 0.02) 100%);
+    border-left: 4px solid #dc3545;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* ============================================
+   ANIMACIONES DE TRANSICIÓN PARA FORMULARIO
+   ============================================ */
+
+/* Estado inicial del form container - TRANSICIONES ULTRA SUAVES */
+#form-container {
+    opacity: 0;
+    transform: translateY(0px); /* SIN movimiento para evitar saltos */
+    transition: opacity 0.6s ease-in-out; /* Solo opacity, sin transform */
+    min-height: 480px; /* Altura igual a la sección para evitar saltos */
+    /* ESTABILIZACIÓN COMPLETA - SOLO OPACITY */
+    will-change: opacity;
+    backface-visibility: hidden;
+    contain: layout style;
+}
+
+#form-container.visible {
+    opacity: 1;
+    transform: translateY(0); /* Sin cambios para mantener consistencia */
+}
+
+/* Animación de fade out para intro - SOLO OPACITY */
+.fadeOut {
+    opacity: 0;
+    transform: translateY(0px); /* SIN movimiento */
+    transition: opacity 0.6s ease-in-out; /* Solo opacity, tiempo más largo */
+    pointer-events: none;
+}
+
+/* Animación de aparecer - SOLO OPACITY */
+.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important; /* Mantener posición */
+    transition: opacity 0.6s ease-in-out !important; /* Solo opacity */
+}
+
+/* Transición suave para el botón de inicio - SIN MOVIMIENTOS */
+.start-survey-btn {
+    transition: opacity 0.6s ease-in-out; /* Solo opacity, tiempo más largo */
+}
+
+/* Estabilizar altura durante transiciones - ALTURA FIJA COMO FORMULARIO */
+#intro-text {
+    transition: opacity 0.6s ease-in-out; /* Solo opacity */
+    min-height: 650px; /* Altura EXACTA igual a la sección del formulario aumentada */
+    /* ESTABILIZACIÓN MÁXIMA - SOLO OPACITY */
+    will-change: opacity;
+    contain: layout style;
+    /* MANTENER DIMENSIONES FIJAS */
+    padding: 3rem; /* Mismo padding que form-section */
+    margin: 1.5rem auto; /* Mismo margin que form-section */
+    width: 90%; /* Mismo ancho que form-section */
+    max-width: 90vw; /* Mismo max-width que form-section */
+}
+
+#intro-text.fadeOut {
+    opacity: 0;
+    transform: translateY(0); /* SIN movimiento */
+    /* MANTENER TODAS LAS DIMENSIONES DURANTE FADEOUT */
+    height: 600px; /* Altura fija durante transición */
+    min-height: 600px;
+    margin: 1.5rem auto; /* Mantener márgenes */
+    padding: 3rem; /* Mantener padding */
+    overflow: hidden;
+}
+
+/* Asegurar transiciones suaves en steps - SIN ANIMACIONES BRUSCAS */
+.survey-step {
+    transition: opacity 0.6s ease-in-out; /* Solo opacity, sin transform */
+    min-height: 480px; /* Altura consistente EXACTA */
+    /* OPTIMIZACIONES DE RENDIMIENTO - SIN TRANSFORM */
+    will-change: opacity;
+    backface-visibility: hidden;
+    contain: layout style;
+}
+
+/* Suavizar scroll durante transiciones - MEJORADO */
+html.smooth-scroll {
+    scroll-behavior: smooth;
+}
+
+/* PREVENIR EFECTOS DE SALTO DURANTE CARGA */
+body {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+body.loading {
+    opacity: 0.9;
+}
+
+/* ============================================
+   FIN ANIMACIONES DE TRANSICIÓN
+   ============================================ */
+
+/* ============================================
+   MEJORAS DE ACCESIBILIDAD
+   ============================================ */
+
+/* Focus mejorado */
+.emoji-cell:focus-within {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.btn:focus {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Reducir movimiento para usuarios sensibles */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .card:hover {
+        transform: none;
+    }
+    
+    .emoji-cell:hover {
+        transform: none;
+    }
+    
+    .submit-btn:hover,
+    .start-survey-btn:hover {
+        transform: none;
+    }
+}
+
+/* ============================================
+   FIN DE ARCHIVO
+   ============================================ */
+
+/* ============================================
+   SECCIÓN DE SELECCIÓN DE CURSO MEJORADA
+   ============================================ */
+
+/* Contenedor específico de selección de curso - COLORES COMO ESCALA DE EVALUACIÓN */
+#step1-course-selection .form-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid var(--header-color);
+    border-radius: var(--border-radius-lg);
+    min-height: 650px; /* Altura mínima adecuada */
+    padding: 3rem;
+    margin: 1.5rem auto;
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.15);
+    width: 90%; /* Ocupa el 90% del ancho de la pantalla en escritorio */
+    max-width: 90vw; /* Máximo 90% del viewport width */
+    position: relative;
+    overflow: hidden;
+    /* PREVENIR ANIMACIONES BRUSCAS */
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Efecto de brillo sutil igual al de la escala */
+#step1-course-selection .form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(44, 62, 80, 0.1), transparent);
+    animation: shine 4s infinite;
+}
+
+/* Título mejorado - MISMOS COLORES QUE ESCALA - SOBRESCRIBIR BOOTSTRAP */
+#step1-course-selection .section-title {
+    color: var(--header-color) !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(44, 62, 80, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    margin: 0 auto 1.5rem auto;
+    max-width: fit-content;
+    border: 2px solid rgba(44, 62, 80, 0.2);
+}
+
+/* Sobrescribir específicamente la clase text-primary de Bootstrap */
+#step1-course-selection .section-title.text-primary {
+    color: var(--header-color) !important;
+}
+
+/* Icono del título de selección de curso igual que la escala */
+#step1-course-selection .section-title i {
+    color: var(--header-color);
+    filter: drop-shadow(0 1px 2px rgba(44,62,80,0.10));
+}
+
+/* Label del formulario más prominente */
+#step1-course-selection .form-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--header-color);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Select mejorado - COLORES ARMONIZADOS */
+#step1-course-selection .form-select {
+    font-size: 1.1rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--header-color);
+    border-radius: var(--border-radius-lg);
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
+    transition: all 0.3s ease;
+}
+
+#step1-course-selection .form-select:focus {
+    border-color: var(--header-color);
+    box-shadow: 0 0 0 0.25rem rgba(44, 62, 80, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Placeholder del select con color más visible y coherente */
+#step1-course-selection .form-select {
+    color: var(--header-color);
+}
+#step1-course-selection .form-select option[value=""] {
+    color: #b0b4b9;
+    font-style: italic;
+}
+
+/* Flecha del select personalizada (solo para navegadores modernos) */
+#step1-course-selection .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' stroke='%232c3e50' stroke-width='2' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.25rem center;
+    background-size: 1.25em 1.25em;
+    padding-right: 2.5rem;
+}
+
+/* Mejorar contraste del texto seleccionado en el select */
+#step1-course-selection .form-select:focus {
+    color: var(--header-color);
+    background-color: #fff;
+}
+
+/* Para navegadores que no soportan background-image en select, fallback: */
+#step1-course-selection .form-select::-ms-expand {
+    color: var(--header-color);
+}
+
+/* Grupo del formulario con más espacio */
+#step1-course-selection .form-group {
+    margin-bottom: 1.5rem; /* Espacio más equilibrado */
+}
+
+/* Botón de comenzar encuesta mejorado */
+#step1-course-selection .submit-btn {
+    font-size: 1.2rem;
+    padding: 1.25rem 2.5rem;
+    background: linear-gradient(135deg, var(--success-color) 0%, #146c43 100%);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+    transition: all 0.3s ease;
+}
+
+#step1-course-selection .submit-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #146c43 0%, #0f5132 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.4);
+}
+
+#step1-course-selection .submit-btn:disabled {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    transform: none;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
+    cursor: not-allowed;
+}
+
+/* Alert de información de profesores mejorado - COLORES CONSISTENTES */
+#profesoresInfo {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid var(--header-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
+}
+
+#profesoresInfo h6 {
+    color: var(--header-color);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* ============================================
+   ICONOS - Solo mantener esto
+   ============================================ */
+
+.bi.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.bi.text-warning {
+    color: #fd7e14 !important;
+}
+
+/* Corrección para text-muted - mejor legibilidad */
+.text-muted {
+    color: #6c757d !important;
+    opacity: 0.8;
+}
+
+/* ============================================
+   CORRECCIÓN SIMPLE Y DEFINITIVA - SPAN BLANCO
+   ============================================ */
+
+/* El span del curso debe verse BLANCO siempre */
+#courseTitle {
+    color: white !important;
+    font-weight: 600 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Los demás elementos text-primary se mantienen con color normal */
+.text-primary:not(#courseTitle) {
+    color: var(--primary-color) !important;
+}
+
+/* ============================================
+   FIN CORRECCIONES
+   ============================================ */
+
+
