@@ -295,22 +295,49 @@ const QuestionManager = {
             // Attempt to fetch all questions. Assuming the API returns both course and professor questions
             // If seccion is not specified, or if there's an 'all' parameter.
             // This is an assumption about the backend API (get_preguntas.php)
-            const data = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}`);
-            
-            if (data.data && Array.isArray(data.data)) { // Assuming API returns { success: true, data: [...] }
-                AppState.allQuestions = data.data;
-                debugLog('Todas las preguntas cargadas:', AppState.allQuestions.length);
-                // Separate questions into course and professor
-                AppState.courseQuestions = AppState.allQuestions.filter(q => q.seccion === 'curso');
-                AppState.professorQuestions = AppState.allQuestions.filter(q => q.seccion === 'profesor');
-                debugLog('Preguntas de curso filtradas:', AppState.courseQuestions.length);
-                debugLog('Preguntas de profesor filtradas:', AppState.professorQuestions.length);
+            const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}`);
+            debugLog('Respuesta completa de API para get_preguntas.php:', response);
+
+            // The PHP API (get_preguntas.php) when seccion=todas (default) returns:
+            // { success: true, data: { curso: [], profesor: [] }, ... }
+            // When a specific seccion is requested, it returns:
+            // { success: true, data: [ ...questions for that section... ], ... }
+
+            if (response && response.success && response.data) {
+                if (Array.isArray(response.data)) {
+                    // This case handles if API returns a flat array of all questions (e.g. future API version or specific filter)
+                    // Each question object in this array must have a 'seccion' property.
+                    AppState.allQuestions = response.data;
+                    debugLog('Todas las preguntas cargadas desde un array plano en response.data:', AppState.allQuestions);
+                } else if (response.data.curso && response.data.profesor) {
+                    // This handles the default case for seccion=todas from get_preguntas.php
+                    AppState.courseQuestions = response.data.curso;
+                    AppState.professorQuestions = response.data.profesor;
+                    AppState.allQuestions = [...response.data.curso, ...response.data.profesor];
+                    debugLog('Preguntas de curso cargadas desde response.data.curso:', AppState.courseQuestions);
+                    debugLog('Preguntas de profesor cargadas desde response.data.profesor:', AppState.professorQuestions);
+                    debugLog('Todas las preguntas combinadas en AppState.allQuestions:', AppState.allQuestions);
+                } else {
+                    Utils.showAlert('Formato de datos de preguntas no reconocido.', 'warning');
+                    console.warn("Respuesta de API para preguntas (formato no reconocido):", response);
+                    return false;
+                }
+
+                // If AppState.allQuestions was populated directly (e.g. flat array)
+                // and course/professor questions weren't, derive them now.
+                if (AppState.allQuestions.length > 0 && (AppState.courseQuestions.length === 0 && AppState.professorQuestions.length === 0)) {
+                    AppState.courseQuestions = AppState.allQuestions.filter(q => q.seccion === 'curso');
+                    AppState.professorQuestions = AppState.allQuestions.filter(q => q.seccion === 'profesor');
+                }
+
+                debugLog('AppState.allQuestions final:', AppState.allQuestions);
+                debugLog('AppState.courseQuestions final derivado:', AppState.courseQuestions);
+                debugLog('AppState.professorQuestions final derivado:', AppState.professorQuestions);
                 return true;
-            } else if (data.curso && data.profesor) { // Fallback if API returns them separately
-                AppState.allQuestions = [...data.curso, ...data.profesor];
-                AppState.courseQuestions = data.curso;
-                AppState.professorQuestions = data.profesor;
-                debugLog('Todas las preguntas cargadas (formato separado):', AppState.allQuestions.length);
+            }
+             else {
+                Utils.showAlert('No se pudieron cargar las preguntas o el formato es incorrecto.', 'warning');
+                console.warn("Respuesta de API para preguntas:", data);
                 return true;
             }
              else {
@@ -335,15 +362,21 @@ const QuestionManager = {
             // This path should ideally not be taken if loadAllQuestions is called first.
             // Kept for robustness or if direct call is ever needed.
             try {
-                const data = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=curso`);
-                if (data.curso && data.curso.length > 0) {
-                    AppState.courseQuestions = data.curso;
+                debugLog("Ejecutando fallback de API para preguntas de curso");
+                const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=curso`);
+                debugLog("Respuesta de API en fallback (curso):", response);
+                // When seccion=curso, PHP returns { success: true, data: [...] }
+                if (response && response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    AppState.courseQuestions = response.data;
+                    debugLog("Preguntas de curso cargadas desde fallback:", AppState.courseQuestions);
                     // If allQuestions is empty, populate it partially or fully
                     if (!AppState.allQuestions.some(q => q.seccion === 'curso')) {
-                        AppState.allQuestions = AppState.allQuestions.concat(data.curso);
+                        AppState.allQuestions = AppState.allQuestions.concat(response.data);
+                         debugLog("AppState.allQuestions actualizado desde fallback (curso):", AppState.allQuestions);
                     }
                 } else {
                      Utils.showAlert('No hay preguntas disponibles para este curso (carga específica)', 'warning');
+                     debugLog("No se encontraron preguntas de curso en fallback o respuesta inválida:", response);
                      return;
                 }
             } catch (error) {
@@ -368,14 +401,20 @@ const QuestionManager = {
             debugLog("loadAllQuestions no ha sido llamado o no retornó preguntas de profesor, intentando carga específica.");
             // This path should ideally not be taken.
             try {
-                const data = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=profesor`);
-                if (data.profesor && data.profesor.length > 0) {
-                    AppState.professorQuestions = data.profesor;
+                debugLog("Ejecutando fallback de API para preguntas de profesor");
+                const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=profesor`);
+                debugLog("Respuesta de API en fallback (profesor):", response);
+                // When seccion=profesor, PHP returns { success: true, data: [...] }
+                if (response && response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    AppState.professorQuestions = response.data;
+                    debugLog("Preguntas de profesor cargadas desde fallback:", AppState.professorQuestions);
                      if (!AppState.allQuestions.some(q => q.seccion === 'profesor')) {
-                        AppState.allQuestions = AppState.allQuestions.concat(data.profesor);
+                        AppState.allQuestions = AppState.allQuestions.concat(response.data);
+                        debugLog("AppState.allQuestions actualizado desde fallback (profesor):", AppState.allQuestions);
                     }
                 } else {
                     Utils.showAlert('No hay preguntas disponibles para evaluar profesores (carga específica)', 'warning');
+                    debugLog("No se encontraron preguntas de profesor en fallback o respuesta inválida:", response);
                     return;
                 }
             } catch (error) {
@@ -393,6 +432,7 @@ const QuestionManager = {
     },
 
     renderQuestions(questions, containerId, prefix) {
+        debugLog(`Renderizando preguntas para ${containerId}`, { count: questions ? questions.length : 0, questions: questions });
         const container = document.getElementById(containerId);
         container.innerHTML = ''; // Clear existing questions
 
@@ -406,6 +446,8 @@ const QuestionManager = {
             const questionDiv = this.createQuestionElement(question, prefix, index);
             fragment.appendChild(questionDiv);
         });
+
+        debugLog(`Fragmento para ${containerId} tiene ${fragment.childNodes.length} nodos hijos.`, fragment);
         container.appendChild(fragment); // Append all questions at once
     },
 

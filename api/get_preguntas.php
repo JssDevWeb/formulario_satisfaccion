@@ -313,8 +313,12 @@ function procesarSolicitud() {
         $cache_key = 'preguntas_raw_' . md5(json_encode($params));
         $preguntas_raw = null;
         $is_apcu_available = function_exists('apcu_fetch');
+        $use_cache = true; // Set to false to easily bypass cache for testing
 
-        if ($is_apcu_available) {
+        // To temporarily bypass cache for diagnosis:
+        // $use_cache = false;
+
+        if ($is_apcu_available && $use_cache) {
             $success = false;
             $preguntas_raw = apcu_fetch($cache_key, $success);
             if ($success && $preguntas_raw !== null) { // Ensure cache hit was successful AND data is not null
@@ -323,15 +327,24 @@ function procesarSolicitud() {
                 }
             } else {
                 $preguntas_raw = null; // Ensure it's null if fetch failed or cache returned null
+                if (defined('MODO_DESARROLLO') && MODO_DESARROLLO) {
+                    error_log("[CACHE MISS OR NULL get_preguntas.php] Key: $cache_key. Success flag: " . ($success ? 'true' : 'false'));
+                }
+            }
+        } else {
+            if (defined('MODO_DESARROLLO') && MODO_DESARROLLO) {
+                error_log("[CACHE BYPASSED get_preguntas.php] APCu available: " . ($is_apcu_available ? 'true' : 'false') . ". use_cache: " . ($use_cache ? 'true' : 'false'));
             }
         }
 
         if ($preguntas_raw === null) {
-            if (defined('MODO_DESARROLLO') && MODO_DESARROLLO && $is_apcu_available) {
-                 error_log("[CACHE MISS get_preguntas.php] Key: $cache_key");
-            }
+            // This block will execute if cache is not used, cache missed, or cache returned null
             $preguntas_raw = getPreguntasFiltradas($pdo, $params);
-            if ($is_apcu_available && $preguntas_raw !== null) {
+            if (defined('MODO_DESARROLLO') && MODO_DESARROLLO) {
+                error_log("[DB FETCH get_preguntas.php] Fetched " . count($preguntas_raw ?? []) . " items from DB.");
+            }
+
+            if ($is_apcu_available && $use_cache && $preguntas_raw !== null) {
                 apcu_store($cache_key, $preguntas_raw, 3600); // Cache for 1 hour
                 if (defined('MODO_DESARROLLO') && MODO_DESARROLLO) {
                     error_log("[CACHE STORED get_preguntas.php] Key: $cache_key");
@@ -366,10 +379,15 @@ function procesarSolicitud() {
             ],
             'metadata' => [
                 'timestamp' => date('Y-m-d H:i:s'),
-                'total_resultados' => count($preguntas_raw)
+                'total_resultados' => count($preguntas_raw ?? []) // Use ?? [] for safety if $preguntas_raw could be null
             ]
         ];
         
+        if (defined('MODO_DESARROLLO') && MODO_DESARROLLO) {
+            error_log('get_preguntas.php response being sent: ' . json_encode(array_keys($response)));
+            error_log('get_preguntas.php data part being sent: ' . json_encode($responseData));
+        }
+
         // Enviar respuesta
         http_response_code(200);
         echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
