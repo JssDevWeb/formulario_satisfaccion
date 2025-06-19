@@ -35,8 +35,9 @@ const AppState = {
     currentFormulario: null,
     profesores: [],
     currentProfessorIndex: 0,
-    courseQuestions: [],
-    professorQuestions: [],
+    allQuestions: [], // Stores all questions (course and professor)
+    courseQuestions: [], // Derived from allQuestions
+    professorQuestions: [], // Derived from allQuestions
     responses: {
         formulario_id: null,
         course_answers: {},
@@ -284,47 +285,166 @@ const FormularioManager = {
 };
 
 // Manejo de preguntas
-const QuestionManager = {    async loadCourseQuestions() {
-        try {
-            const data = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=curso`);
-            
-            if (data.curso && data.curso.length > 0) {
-                AppState.courseQuestions = data.curso;
-                this.renderQuestions(data.curso, 'courseQuestions', 'course');
-                
-                // Actualizar título del curso
-                document.getElementById('courseTitle').textContent = AppState.currentFormulario.curso_nombre;
-            } else {
-                Utils.showAlert('No hay preguntas disponibles para este curso', 'warning');
-            }
-        } catch (error) {
-            console.error('Error cargando preguntas del curso:', error);
-            Utils.showAlert('Error al cargar las preguntas del curso', 'danger');
+const QuestionManager = {
+    async loadAllQuestions() {
+        if (AppState.allQuestions.length > 0) {
+            debugLog('Todas las preguntas ya están cargadas.');
+            return true;
         }
-    },    async loadProfessorQuestions() {
         try {
-            const data = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=profesor`);
-            
-            if (data.profesor && data.profesor.length > 0) {
-                AppState.professorQuestions = data.profesor;
-                this.renderProfessorQuestions();
+            // Attempt to fetch all questions. Assuming the API returns both course and professor questions
+            // If seccion is not specified, or if there's an 'all' parameter.
+            // This is an assumption about the backend API (get_preguntas.php)
+            const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}`);
+            debugLog('Respuesta completa de API para get_preguntas.php:', response);
+
+            // The PHP API (get_preguntas.php) when seccion=todas (default) returns:
+            // { success: true, data: { curso: [], profesor: [] }, ... }
+            // When a specific seccion is requested, it returns:
+            // { success: true, data: [ ...questions for that section... ], ... }
+
+            if (response && response.success && response.data) {
+                if (Array.isArray(response.data)) {
+                    // This case handles if API returns a flat array of all questions (e.g. future API version or specific filter)
+                    // Each question object in this array must have a 'seccion' property.
+                    AppState.allQuestions = response.data;
+                    debugLog('Todas las preguntas cargadas desde un array plano en response.data:', AppState.allQuestions);
+                } else if (response.data.curso && response.data.profesor) {
+                    // This handles the default case for seccion=todas from get_preguntas.php
+                    AppState.courseQuestions = response.data.curso;
+                    AppState.professorQuestions = response.data.profesor;
+                    AppState.allQuestions = [...response.data.curso, ...response.data.profesor];
+                    debugLog('Preguntas de curso cargadas desde response.data.curso:', AppState.courseQuestions);
+                    debugLog('Preguntas de profesor cargadas desde response.data.profesor:', AppState.professorQuestions);
+                    debugLog('Todas las preguntas combinadas en AppState.allQuestions:', AppState.allQuestions);
+                } else {
+                    Utils.showAlert('Formato de datos de preguntas no reconocido.', 'warning');
+                    console.warn("Respuesta de API para preguntas (formato no reconocido):", response);
+                    return false;
+                }
+
+                // If AppState.allQuestions was populated directly (e.g. flat array)
+                // and course/professor questions weren't, derive them now.
+                if (AppState.allQuestions.length > 0 && (AppState.courseQuestions.length === 0 && AppState.professorQuestions.length === 0)) {
+                    AppState.courseQuestions = AppState.allQuestions.filter(q => q.seccion === 'curso');
+                    AppState.professorQuestions = AppState.allQuestions.filter(q => q.seccion === 'profesor');
+                }
+
+                debugLog('AppState.allQuestions final:', AppState.allQuestions);
+                debugLog('AppState.courseQuestions final derivado:', AppState.courseQuestions);
+                debugLog('AppState.professorQuestions final derivado:', AppState.professorQuestions);
+                return true; // Successfully processed questions
             } else {
-                Utils.showAlert('No hay preguntas disponibles para evaluar profesores', 'warning');
+                // This 'else' block is executed if the condition (response && response.success && response.data) is false.
+                // This means either the response object itself is falsy, or success is false, or data is missing.
+                Utils.showAlert('No se pudieron cargar las preguntas: respuesta inválida o no exitosa de la API.', 'warning');
+                console.warn("Respuesta de API para preguntas (inválida o no exitosa):", response); // Corrected 'data' to 'response'
+                return false; // Indicate failure
             }
         } catch (error) {
-            console.error('Error cargando preguntas del profesor:', error);
-            Utils.showAlert('Error al cargar las preguntas del profesor', 'danger');
+            console.error('Error cargando todas las preguntas:', error); // Catches errors from fetchAPI or other synchronous errors
+            Utils.showAlert('Error crítico al cargar las preguntas base.', 'danger');
+            return false;
+        }
+    },
+
+    async loadCourseQuestions() {
+        if (AppState.courseQuestions.length === 0 && AppState.allQuestions.length > 0) {
+             // Already loaded and filtered by loadAllQuestions
+            debugLog("Usando preguntas de curso desde allQuestions");
+        } else if (AppState.allQuestions.length === 0) {
+            // Fallback or initial load if loadAllQuestions hasn't run or failed for course specific part
+            debugLog("loadAllQuestions no ha sido llamado o no retornó preguntas de curso, intentando carga específica.");
+            // This path should ideally not be taken if loadAllQuestions is called first.
+            // Kept for robustness or if direct call is ever needed.
+            try {
+                debugLog("Ejecutando fallback de API para preguntas de curso");
+                const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=curso`);
+                debugLog("Respuesta de API en fallback (curso):", response);
+                // When seccion=curso, PHP returns { success: true, data: [...] }
+                if (response && response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    AppState.courseQuestions = response.data;
+                    debugLog("Preguntas de curso cargadas desde fallback:", AppState.courseQuestions);
+                    // If allQuestions is empty, populate it partially or fully
+                    if (!AppState.allQuestions.some(q => q.seccion === 'curso')) {
+                        AppState.allQuestions = AppState.allQuestions.concat(response.data);
+                         debugLog("AppState.allQuestions actualizado desde fallback (curso):", AppState.allQuestions);
+                    }
+                } else {
+                     Utils.showAlert('No hay preguntas disponibles para este curso (carga específica)', 'warning');
+                     debugLog("No se encontraron preguntas de curso en fallback o respuesta inválida:", response);
+                     return;
+                }
+            } catch (error) {
+                console.error('Error cargando preguntas del curso (carga específica):', error);
+                Utils.showAlert('Error al cargar las preguntas del curso', 'danger');
+                return;
+            }
+        }
+
+        if (AppState.courseQuestions.length > 0) {
+            this.renderQuestions(AppState.courseQuestions, 'courseQuestions', 'course');
+            document.getElementById('courseTitle').textContent = AppState.currentFormulario.curso_nombre;
+        } else {
+            Utils.showAlert('No hay preguntas de curso para mostrar.', 'warning');
+        }
+    },
+
+    async loadProfessorQuestions() {
+        if (AppState.professorQuestions.length === 0 && AppState.allQuestions.length > 0) {
+            debugLog("Usando preguntas de profesor desde allQuestions");
+        } else if (AppState.allQuestions.length === 0) {
+            debugLog("loadAllQuestions no ha sido llamado o no retornó preguntas de profesor, intentando carga específica.");
+            // This path should ideally not be taken.
+            try {
+                debugLog("Ejecutando fallback de API para preguntas de profesor");
+                const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=profesor`);
+                debugLog("Respuesta de API en fallback (profesor):", response);
+                // When seccion=profesor, PHP returns { success: true, data: [...] }
+                if (response && response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    AppState.professorQuestions = response.data;
+                    debugLog("Preguntas de profesor cargadas desde fallback:", AppState.professorQuestions);
+                     if (!AppState.allQuestions.some(q => q.seccion === 'profesor')) {
+                        AppState.allQuestions = AppState.allQuestions.concat(response.data);
+                        debugLog("AppState.allQuestions actualizado desde fallback (profesor):", AppState.allQuestions);
+                    }
+                } else {
+                    Utils.showAlert('No hay preguntas disponibles para evaluar profesores (carga específica)', 'warning');
+                    debugLog("No se encontraron preguntas de profesor en fallback o respuesta inválida:", response);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error cargando preguntas del profesor (carga específica):', error);
+                Utils.showAlert('Error al cargar las preguntas del profesor', 'danger');
+                return;
+            }
+        }
+
+        if (AppState.professorQuestions.length > 0) {
+            this.renderProfessorQuestions();
+        } else {
+            Utils.showAlert('No hay preguntas de profesor para mostrar.', 'warning');
         }
     },
 
     renderQuestions(questions, containerId, prefix) {
+        debugLog(`Renderizando preguntas para ${containerId}`, { count: questions ? questions.length : 0, questions: questions });
         const container = document.getElementById(containerId);
-        container.innerHTML = '';
+        container.innerHTML = ''; // Clear existing questions
 
+        if (!questions || questions.length === 0) {
+            debugLog(`No questions to render for ${containerId}`);
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
         questions.forEach((question, index) => {
             const questionDiv = this.createQuestionElement(question, prefix, index);
-            container.appendChild(questionDiv);
+            fragment.appendChild(questionDiv);
         });
+
+        debugLog(`Fragmento para ${containerId} tiene ${fragment.childNodes.length} nodos hijos.`, fragment);
+        container.appendChild(fragment); // Append all questions at once
     },
 
     renderProfessorQuestions() {
@@ -458,10 +578,16 @@ const QuestionManager = {    async loadCourseQuestions() {
 
 // Manejo de navegación
 const NavigationManager = {
-    startSurvey() {
+    async startSurvey() {
         debugLog('Iniciando encuesta');
+        const questionsLoaded = await QuestionManager.loadAllQuestions();
+        if (!questionsLoaded) {
+            Utils.showAlert('No se pudieron cargar las preguntas necesarias para iniciar la encuesta.', 'danger');
+            return;
+        }
         Utils.showStep(2);
-        QuestionManager.loadCourseQuestions();
+        // loadCourseQuestions will now use pre-loaded questions if available
+        await QuestionManager.loadCourseQuestions();
     },
 
     async nextToProfessors() {
@@ -477,8 +603,9 @@ const NavigationManager = {
         // Pasar a evaluación de profesores
         AppState.currentProfessorIndex = 0;
         Utils.showStep(3);
+        // loadProfessorQuestions will now use pre-loaded questions if available
         await QuestionManager.loadProfessorQuestions();
-        QuestionManager.renderProfessorQuestions();
+        // renderProfessorQuestions is called by loadProfessorQuestions if successful
     },
 
     nextProfessor() {
@@ -512,23 +639,33 @@ const NavigationManager = {
 
         const requiredInputs = currentStepElement.querySelectorAll('[required]');
         let isValid = true;
+        const validatedRadioGroups = {}; // Cache for radio group validation
 
         requiredInputs.forEach(input => {
+            const questionGroupElement = input.closest('.mb-4, .form-group');
+
             if (input.type === 'radio') {
-                const radioGroup = currentStepElement.querySelectorAll(`[name="${input.name}"]`);
-                const hasChecked = Array.from(radioGroup).some(radio => radio.checked);
-                if (!hasChecked) {
+                const groupName = input.name;
+                if (validatedRadioGroups[groupName] === undefined) { // Check if group already validated
+                    const radioGroup = currentStepElement.querySelectorAll(`[name="${groupName}"]`);
+                    const hasChecked = Array.from(radioGroup).some(radio => radio.checked);
+                    validatedRadioGroups[groupName] = hasChecked; // Store validation result
+                }
+
+                if (!validatedRadioGroups[groupName]) {
                     isValid = false;
-                    input.closest('.mb-4, .form-group').classList.add('border-danger');
+                    if (questionGroupElement) questionGroupElement.classList.add('border-danger');
                 } else {
-                    input.closest('.mb-4, .form-group').classList.remove('border-danger');
+                    if (questionGroupElement) questionGroupElement.classList.remove('border-danger');
                 }
             } else if (input.tagName === 'TEXTAREA' || input.type === 'text') {
                 if (!input.value.trim()) {
                     isValid = false;
                     input.classList.add('is-invalid');
+                    if (questionGroupElement) questionGroupElement.classList.add('border-danger');
                 } else {
                     input.classList.remove('is-invalid');
+                    if (questionGroupElement) questionGroupElement.classList.remove('border-danger');
                 }
             }
         });
@@ -638,7 +775,14 @@ const SubmissionManager = {
 
         } catch (error) {
             console.error('Error enviando encuesta:', error);
-            Utils.showAlert('Error al enviar la encuesta. Por favor intente nuevamente.', 'danger');
+            let displayErrorMessage = 'Error al enviar la encuesta. Por favor intente nuevamente.';
+            if (error && error.message) {
+                // Append server message if it's not a generic HTTP error status text
+                if (!error.message.startsWith('HTTP Error:')) {
+                    displayErrorMessage += ` Detalle: ${error.message}`;
+                }
+            }
+            Utils.showAlert(displayErrorMessage, 'danger', 0); // 0 duration for persistent alert
         } finally {
             document.getElementById('loadingOverlay').style.display = 'none';
         }
@@ -749,14 +893,27 @@ function initializeEventListeners() {
 }
 
 // Inicialización
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     debugLog('Inicializando sistema de encuestas secuencial');
     
     // Inicializar event listeners
     initializeEventListeners();
     
     // Cargar formularios disponibles
-    FormularioManager.loadFormularios();
+    await FormularioManager.loadFormularios();
+
+    // Pre-cargar todas las preguntas al inicio de la aplicación
+    // Esto sucede en segundo plano y no bloquea la selección del formulario
+    QuestionManager.loadAllQuestions().then(loaded => {
+        if (loaded) {
+            debugLog("Preguntas base precargadas exitosamente.");
+        } else {
+            debugLog("Precarga de preguntas base falló o no retornó preguntas.");
+        }
+    }).catch(error => {
+        console.error("Error en la precarga de preguntas:", error);
+        Utils.showAlert("Hubo un problema al cargar datos iniciales de la encuesta.", "warning", 0); // Persistent alert
+    });
     
     // Mostrar primer paso
     Utils.showStep(1);

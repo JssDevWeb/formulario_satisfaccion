@@ -118,16 +118,22 @@ function validarDatosEntrada() {
         }
     }
     
-    // Validar que se incluyan respuestas
-    if (!isset($data['respuestas_curso']) && !isset($data['respuestas_profesores'])) {
-        throw new InvalidArgumentException('Debe incluir al menos respuestas_curso o respuestas_profesores');
+    // Validar que se incluya el array de respuestas
+    if (!isset($data['respuestas']) || !is_array($data['respuestas'])) {
+        throw new InvalidArgumentException('El campo "respuestas" es obligatorio y debe ser un array');
+    }
+
+    // Validar que el array de respuestas no esté vacío
+    if (empty($data['respuestas'])) {
+        throw new InvalidArgumentException('El array "respuestas" no puede estar vacío');
     }
     
     return [
         'formulario_id' => $formulario_id,
         'tiempo_completado' => $tiempo_completado,
-        'respuestas_curso' => $data['respuestas_curso'] ?? [],
-        'respuestas_profesores' => $data['respuestas_profesores'] ?? []
+        // La clave 'respuestas' contendrá el array de objetos de respuesta
+        // Cada objeto: {pregunta_id, profesor_id (opcional/null), respuesta}
+        'respuestas' => $data['respuestas']
     ];
 }
 
@@ -363,53 +369,55 @@ function validarRespuesta($pregunta, $valor) {
 /**
  * Función para validar todas las respuestas
  */
-function validarRespuestas($data, $preguntas, $profesoresValidos) {
+function validarRespuestas($respuestasArray, $preguntas, $profesoresValidos) {
     $errors = [];
-    
-    // Validar respuestas de curso
-    foreach ($data['respuestas_curso'] as $preguntaId => $respuesta) {
-        $preguntaId = (int)$preguntaId;
-        
-        if (!isset($preguntas[$preguntaId])) {
-            $errors[] = "Pregunta de curso no existe: ID $preguntaId";
-            continue;
-        }
-        
-        $pregunta = $preguntas[$preguntaId];
-        if ($pregunta['seccion'] !== 'curso') {
-            $errors[] = "Pregunta ID $preguntaId no es de sección curso";
-            continue;
-        }
-        
-        $valor = $respuesta['valor'] ?? null;
-        $errors = array_merge($errors, validarRespuesta($pregunta, $valor));
+
+    if (!is_array($respuestasArray)) {
+        $errors[] = "El formato de respuestas es incorrecto.";
+        return $errors;
     }
-    
-    // Validar respuestas de profesores
-    foreach ($data['respuestas_profesores'] as $profesorId => $respuestasPorProfesor) {
-        $profesorId = (int)$profesorId;
-        
-        if (!in_array($profesorId, $profesoresValidos)) {
-            $errors[] = "Profesor no válido para este formulario: ID $profesorId";
+
+    foreach ($respuestasArray as $index => $respuestaItem) {
+        // Validar estructura básica del item de respuesta
+        if (!isset($respuestaItem['pregunta_id']) || !isset($respuestaItem['respuesta'])) {
+            $errors[] = "Item de respuesta en índice $index no tiene pregunta_id o respuesta.";
             continue;
         }
-        
-        foreach ($respuestasPorProfesor as $preguntaId => $respuesta) {
-            $preguntaId = (int)$preguntaId;
-            
-            if (!isset($preguntas[$preguntaId])) {
-                $errors[] = "Pregunta de profesor no existe: ID $preguntaId";
-                continue;
-            }
-            
-            $pregunta = $preguntas[$preguntaId];
+
+        $preguntaId = (int)$respuestaItem['pregunta_id'];
+        $profesorId = isset($respuestaItem['profesor_id']) ? (int)$respuestaItem['profesor_id'] : null;
+        $valor = $respuestaItem['respuesta'];
+
+        // Verificar si la pregunta existe
+        if (!isset($preguntas[$preguntaId])) {
+            $errors[] = "Pregunta ID $preguntaId (índice $index) no existe.";
+            continue;
+        }
+        $pregunta = $preguntas[$preguntaId];
+
+        // Validar consistencia de profesor_id y sección de pregunta
+        if ($profesorId !== null) { // Respuesta para un profesor
             if ($pregunta['seccion'] !== 'profesor') {
-                $errors[] = "Pregunta ID $preguntaId no es de sección profesor";
+                $errors[] = "Pregunta ID $preguntaId (índice $index) es de sección '{$pregunta['seccion']}', pero se proveyó un profesor_id ($profesorId).";
                 continue;
             }
-            
-            $valor = $respuesta['valor'] ?? null;
-            $errors = array_merge($errors, validarRespuesta($pregunta, $valor));
+            if (!in_array($profesorId, $profesoresValidos)) {
+                $errors[] = "Profesor ID $profesorId (índice $index) no es válido para este formulario.";
+                continue;
+            }
+        } else { // Respuesta para el curso
+            if ($pregunta['seccion'] !== 'curso') {
+                $errors[] = "Pregunta ID $preguntaId (índice $index) es de sección '{$pregunta['seccion']}', pero no se proveyó profesor_id (respuesta de curso).";
+                continue;
+            }
+        }
+
+        // Validar la respuesta individual
+        $validationErrors = validarRespuesta($pregunta, $valor);
+        if (!empty($validationErrors)) {
+            foreach ($validationErrors as $err) {
+                $errors[] = "Error en respuesta para pregunta ID $preguntaId (índice $index): $err";
+            }
         }
     }
     
@@ -491,54 +499,75 @@ function insertarEncuesta($pdo, $data, $formulario, $ip, $userAgent) {
         
         $respuestasInsertadas = 0;
         
-        // Insertar respuestas de curso
-        foreach ($data['respuestas_curso'] as $preguntaId => $respuesta) {
-            $valor = $respuesta['valor'] ?? null;
-            if ($valor === null || $valor === '') continue;
+        // Insertar respuestas desde el array 'respuestas'
+        foreach ($data['respuestas'] as $respuestaItem) {
+            $preguntaId = (int)$respuestaItem['pregunta_id'];
+            // profesor_id puede ser null, se manejará correctamente por bindParam/bindValue
+            $profesorId = isset($respuestaItem['profesor_id']) ? (int)$respuestaItem['profesor_id'] : null;
+            $valor = $respuestaItem['respuesta'];
+
+            // Omitir si el valor de la respuesta es nulo o vacío, a menos que la pregunta sea obligatoria
+            // La validación de obligatoriedad ya se hizo en validarRespuestas, aquí solo evitamos insertar vacíos no significativos
+            // Si una pregunta obligatoria llegara aquí con valor vacío, es un fallo de lógica en validación o una respuesta "vacía" permitida.
+            // Por seguridad, se podría re-chequear $preguntas[$preguntaId]['es_obligatoria'] aquí si se desea ser extra cauto.
+            if ($valor === null || $valor === '') {
+                // Considerar si una pregunta no obligatoria con respuesta vacía debe ser insertada como NULL o no insertada.
+                // Actualmente, no se inserta.
+                continue;
+            }
             
             $valorInt = null;
             $valorText = null;
             
+            // Asumimos que la validación ya ha ocurrido.
+            // Aquí solo preparamos el tipo de dato para la DB.
             if (is_numeric($valor)) {
+                // Podría ser una opción múltiple numérica o una escala.
+                // Opciones múltiples se guardan como string si su valor es string.
+                // La JS envía todo como string, pero si es numéricamente un string, se convierte.
+                // Se necesita obtener el tipo de pregunta para ser más preciso.
+                // $preguntaTipo = $preguntas[$preguntaId]['tipo'] ?? 'desconocido';
+                // if ($preguntaTipo == 'escala' || ($preguntaTipo == 'opcion_multiple' && is_numeric($valor)))
                 $valorInt = (int)$valor;
             } else {
-                $valorText = substr($valor, 0, MAX_LONGITUD_TEXTO);
+                $valorText = substr((string)$valor, 0, MAX_LONGITUD_TEXTO);
             }
-            
+             // Si el valor es numérico pero la pregunta es de texto (ej. un DNI), se guardará como texto.
+            // Esto se puede refinar si se pasa el array $preguntas a esta función
+            // para verificar $preguntas[$preguntaId]['tipo'] === 'texto'
+            if (!is_numeric($valor) || (is_string($valor) && strlen($valor) > 0 && !ctype_digit($valor) && !is_numeric($valor)) ) {
+                 // Si es un string que no es puramente numérico, o si es un número pero queremos guardarlo como texto
+                 // (ej. opción múltiple "01" que debe ser string)
+                 // Forzamos $valorInt a null si $valorText tiene contenido no numérico.
+                 // Esta lógica puede necesitar ajuste basado en cómo se definen los tipos de pregunta.
+                 // La validación en validarRespuesta ya debería haber asegurado la compatibilidad del tipo.
+                if ($valorText !== null) $valorInt = null; // Prioritize text if value was determined as text
+            }
+
+
             $stmtRespuesta->bindParam(':encuesta_id', $encuestaId, PDO::PARAM_INT);
             $stmtRespuesta->bindParam(':pregunta_id', $preguntaId, PDO::PARAM_INT);
-            $stmtRespuesta->bindValue(':profesor_id', null, PDO::PARAM_NULL);
-            $stmtRespuesta->bindParam(':valor_int', $valorInt, PDO::PARAM_INT);
-            $stmtRespuesta->bindParam(':valor_text', $valorText, PDO::PARAM_STR);
             
+            if ($profesorId === null) {
+                $stmtRespuesta->bindValue(':profesor_id', null, PDO::PARAM_NULL);
+            } else {
+                $stmtRespuesta->bindParam(':profesor_id', $profesorId, PDO::PARAM_INT);
+            }
+
+            if ($valorInt === null) {
+                $stmtRespuesta->bindValue(':valor_int', null, PDO::PARAM_NULL);
+            } else {
+                $stmtRespuesta->bindParam(':valor_int', $valorInt, PDO::PARAM_INT);
+            }
+
+            if ($valorText === null) {
+                $stmtRespuesta->bindValue(':valor_text', null, PDO::PARAM_NULL);
+            } else {
+                $stmtRespuesta->bindParam(':valor_text', $valorText, PDO::PARAM_STR);
+            }
+
             $stmtRespuesta->execute();
             $respuestasInsertadas++;
-        }
-        
-        // Insertar respuestas de profesores
-        foreach ($data['respuestas_profesores'] as $profesorId => $respuestasPorProfesor) {
-            foreach ($respuestasPorProfesor as $preguntaId => $respuesta) {
-                $valor = $respuesta['valor'] ?? null;
-                if ($valor === null || $valor === '') continue;
-                
-                $valorInt = null;
-                $valorText = null;
-                
-                if (is_numeric($valor)) {
-                    $valorInt = (int)$valor;
-                } else {
-                    $valorText = substr($valor, 0, MAX_LONGITUD_TEXTO);
-                }
-                
-                $stmtRespuesta->bindParam(':encuesta_id', $encuestaId, PDO::PARAM_INT);
-                $stmtRespuesta->bindParam(':pregunta_id', $preguntaId, PDO::PARAM_INT);
-                $stmtRespuesta->bindParam(':profesor_id', $profesorId, PDO::PARAM_INT);
-                $stmtRespuesta->bindParam(':valor_int', $valorInt, PDO::PARAM_INT);
-                $stmtRespuesta->bindParam(':valor_text', $valorText, PDO::PARAM_STR);
-                
-                $stmtRespuesta->execute();
-                $respuestasInsertadas++;
-            }
         }
         
         // Confirmar transacción
@@ -588,9 +617,10 @@ function procesarSolicitud() {
         $profesoresValidos = obtenerProfesoresFormulario($pdo, $data['formulario_id']);
         
         // Validar respuestas
-        $errorsValidacion = validarRespuestas($data, $preguntas, $profesoresValidos);
+        // $data['respuestas'] ahora contiene el array de respuestas individuales
+        $errorsValidacion = validarRespuestas($data['respuestas'], $preguntas, $profesoresValidos);
         if (!empty($errorsValidacion)) {
-            throw new InvalidArgumentException('Errores de validación: ' . implode(', ', $errorsValidacion));
+            throw new InvalidArgumentException('Errores de validación: ' . implode('; ', $errorsValidacion));
         }
         
         // Insertar encuesta y respuestas
