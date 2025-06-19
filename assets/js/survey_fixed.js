@@ -333,20 +333,16 @@ const QuestionManager = {
                 debugLog('AppState.allQuestions final:', AppState.allQuestions);
                 debugLog('AppState.courseQuestions final derivado:', AppState.courseQuestions);
                 debugLog('AppState.professorQuestions final derivado:', AppState.professorQuestions);
-                return true;
-            }
-             else {
-                Utils.showAlert('No se pudieron cargar las preguntas o el formato es incorrecto.', 'warning');
-                console.warn("Respuesta de API para preguntas:", data);
-                return true;
-            }
-             else {
-                Utils.showAlert('No se pudieron cargar las preguntas o el formato es incorrecto.', 'warning');
-                console.warn("Respuesta de API para preguntas:", data);
-                return false;
+                return true; // Successfully processed questions
+            } else {
+                // This 'else' block is executed if the condition (response && response.success && response.data) is false.
+                // This means either the response object itself is falsy, or success is false, or data is missing.
+                Utils.showAlert('No se pudieron cargar las preguntas: respuesta inválida o no exitosa de la API.', 'warning');
+                console.warn("Respuesta de API para preguntas (inválida o no exitosa):", response); // Corrected 'data' to 'response'
+                return false; // Indicate failure
             }
         } catch (error) {
-            console.error('Error cargando todas las preguntas:', error);
+            console.error('Error cargando todas las preguntas:', error); // Catches errors from fetchAPI or other synchronous errors
             Utils.showAlert('Error crítico al cargar las preguntas base.', 'danger');
             return false;
         }
