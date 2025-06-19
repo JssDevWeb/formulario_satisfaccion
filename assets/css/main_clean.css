@@ -580,7 +580,7 @@ main {
 
 .evaluation-section .questions-container .evaluation-table {
     width: 100%;
-    border-collapse: separate; /* Allows border-radius on cells if needed, and spacing */
+    border-collapse: separate;
     border-spacing: 0;
     margin-top: 1.5rem;
     border: 1px solid var(--border-color-default);
@@ -590,7 +590,7 @@ main {
 
 .evaluation-section .questions-container .evaluation-table thead.sticky-top th {
     background-color: var(--table-header-bg);
-    color: var(--header-color);
+    color: var(--header-color); /* Base header color, uses --question-text-color in dark mode */
     font-weight: 600;
     font-size: 0.9rem;
     padding: 0.75rem 1rem;
@@ -601,28 +601,27 @@ main {
 
 .evaluation-section .questions-container .evaluation-table th.question-text-col {
     text-align: left;
-    width: 40%; /* Allocate more space for question text */
+    width: 40%;
 }
 
 .evaluation-section .questions-container .evaluation-table th.emoji-header {
-    font-size: 0.8rem; /* Text above emoji */
-    padding-bottom: 0.5rem; /* Space for emoji below */
+    font-size: 0.8rem;
+    padding-bottom: 0.5rem;
     line-height: 1.2;
 }
 
 .evaluation-section .questions-container .evaluation-table th.emoji-header::after {
-    content: ''; /* Emoji will be in td label, header just describes column */
-    font-size: 1.5rem; /* Size of emoji character if it were here */
+    content: '';
+    font-size: 1.5rem;
     display: block;
     margin-top: 0.25rem;
 }
-/* Specific emojis for headers if desired (alternative to data-label in JS) */
+
 .evaluation-section .questions-container .evaluation-table th.emoji-header:nth-of-type(2)::after { content: '😃'; }
 .evaluation-section .questions-container .evaluation-table th.emoji-header:nth-of-type(3)::after { content: '🙂'; }
 .evaluation-section .questions-container .evaluation-table th.emoji-header:nth-of-type(4)::after { content: '😐'; }
 .evaluation-section .questions-container .evaluation-table th.emoji-header:nth-of-type(5)::after { content: '😕'; }
 .evaluation-section .questions-container .evaluation-table th.emoji-header:nth-of-type(6)::after { content: '😞'; }
-
 
 .evaluation-section .questions-container .evaluation-table tbody tr {
     transition: background-color 0.15s ease-in-out;
@@ -642,7 +641,7 @@ main {
     font-weight: 500;
     color: var(--question-text-color);
     font-size: 0.95rem;
-    /* background: var(--question-text-col-bg); /* Optional: if a subtle bg is desired for this column */
+    /* background: var(--question-text-col-bg); */
 }
 
 .evaluation-section .questions-container .evaluation-table td.question-text-col .question-number {
@@ -654,39 +653,36 @@ main {
 .evaluation-section .questions-container .emoji-cell {
     text-align: center;
     cursor: pointer;
-    padding: 0.5rem; /* Reduced padding for tighter cells */
-    position: relative; /* For radio button and tooltip */
-    min-width: 70px; /* Ensure cells have some width */
+    padding: 0.5rem;
+    position: relative;
+    min-width: 70px;
     background: var(--emoji-cell-bg);
+    transition: background-color 0.2s ease-in-out;
 }
+
 .evaluation-section .questions-container .emoji-cell:hover {
     background: var(--emoji-cell-hover-bg);
 }
 
-
 .evaluation-section .questions-container .emoji-cell .emoji-only {
-    font-size: 1.8rem; /* Emoji size */
-    display: none; /* Hidden by default, shown when selected */
+    font-size: 1.8rem;
+    display: none;
     line-height: 1;
     padding: 0.25rem;
     border-radius: var(--border-radius-sm);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-/* .evaluation-section .questions-container .emoji-cell:hover .emoji-only { */
-    /* display: block; /* Optionally show on hover if not selected */
-    /* opacity: 0.5; */
-/* } */
-
 .evaluation-section .questions-container .emoji-cell.selected .emoji-only {
-    display: inline-block; /* Show selected emoji */
+    display: inline-block;
     background-color: var(--emoji-cell-selected-emoji-bg);
     color: var(--emoji-cell-selected-emoji-text-color);
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
+
 .evaluation-section .questions-container .emoji-cell.selected {
     background-color: var(--emoji-cell-selected-bg);
 }
-
 
 .evaluation-section .questions-container .emoji-cell input[type="radio"].visually-hidden {
     position: absolute;
@@ -696,14 +692,13 @@ main {
     top: 0;
     left: 0;
     cursor: pointer;
-    margin: 0; /* Reset margin */
+    margin: 0;
 }
 
-/* Tooltip-like label for emoji cell (data-label) */
 .evaluation-section .questions-container .emoji-cell::after {
     content: attr(data-label);
     position: absolute;
-    bottom: calc(100% + 5px); /* Position above the cell */
+    bottom: calc(100% + 5px);
     left: 50%;
     transform: translateX(-50%);
     background-color: var(--emoji-cell-tooltip-bg);
@@ -715,7 +710,7 @@ main {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s, visibility 0.2s;
-    pointer-events: none; /* Prevent tooltip from interfering with clicks */
+    pointer-events: none;
     z-index: 10;
 }
 
@@ -725,79 +720,75 @@ main {
 }
 
 .evaluation-section .questions-container td.non-scale-input-cell {
-    padding: 1rem; /* More padding for embedded form groups */
+    padding: 1rem;
 }
 
 .evaluation-section .questions-container .non-scale-input-cell .form-group {
-    margin-bottom: 0; /* Remove default form-group margin if it's the only element */
+    margin-bottom: 0;
 }
+
 .evaluation-section .questions-container .non-scale-input-cell textarea.form-control {
     min-height: 80px;
 }
+
 .evaluation-section .questions-container .non-scale-input-cell .char-counter-wrapper {
     font-size: 0.8rem;
-    color: var(--secondary-color); /* Use variable */
+    color: var(--secondary-color);
     margin-top: 0.25rem;
 }
-
 
 /* Validation Styles for Table Rows */
 .evaluation-section .questions-container tr.missing-answer td {
     background-color: var(--missing-answer-row-bg) !important;
 }
+
 .evaluation-section .questions-container tr.missing-answer td.question-text-col {
     border-left: 3px solid var(--missing-answer-row-highlight-border);
     font-weight: bold;
 }
+
 .evaluation-section .questions-container tr.border-danger td {
      border-top-color: var(--missing-answer-row-highlight-border);
      border-bottom-color: var(--missing-answer-row-highlight-border);
 }
+
 .evaluation-section .questions-container tr.border-danger:first-child td {
     border-top-color: var(--missing-answer-row-highlight-border);
 }
+
 .evaluation-section .questions-container tr.border-danger:last-child td {
     border-bottom-color: var(--missing-answer-row-highlight-border);
 }
 
-
 /* Dark Mode Table Styles (now using variables defined in dark mode :root) */
 @media (prefers-color-scheme: dark) {
-    .evaluation-section .questions-container .evaluation-table {
-        border-color: var(--border-color-default);
-    }
+    /* Most table styles will adapt via CSS variables defined in :root within this media query. */
+    /* Only add specific overrides if a variable isn't sufficient or a different behavior is needed. */
 
     .evaluation-section .questions-container .evaluation-table thead.sticky-top th {
-        background-color: var(--table-header-bg);
-        color: var(--question-text-color); /* General light text for dark mode */
-        border-bottom-color: var(--border-color-default);
+        color: var(--question-text-color); /* Ensure header text uses the light color in dark mode */
     }
 
-    .evaluation-section .questions-container .evaluation-table td {
-        border-top-color: var(--border-color-default);
+    .evaluation-section .questions-container .evaluation-table td.question-text-col .question-number {
+        color: var(--primary-light); /* Ensure question number is light in dark mode */
     }
 
-    /* .evaluation-section .questions-container .evaluation-table tbody tr:hover is already var(--question-row-hover-bg) which is var(--hover-bg) */
-
+    /* Optional: If question-text-col needs a specific dark background using its variable */
     .evaluation-section .questions-container .evaluation-table td.question-text-col {
-        color: var(--question-text-color);
-        /* background: var(--question-text-col-bg); /* This is already set for dark mode via variable */
+        /* background: var(--question-text-col-bg); */ /* Example: This is already defined in dark :root */
     }
-    /* .evaluation-section .questions-container .evaluation-table td.question-text-col .question-number color is var(--primary-light) via variable */
 
-
-    /* .evaluation-section .questions-container .emoji-cell.selected .emoji-only uses vars */
-    /* .evaluation-section .questions-container .emoji-cell.selected uses vars */
-    /* .evaluation-section .questions-container .emoji-cell background uses var */
-    /* .evaluation-section .questions-container .emoji-cell:hover background uses var */
-
-
-    /* .evaluation-section .questions-container .emoji-cell::after (Tooltip) uses vars */
-
-
-    /* .evaluation-section .questions-container tr.missing-answer td uses var */
-    /* .evaluation-section .questions-container tr.missing-answer td.question-text-col border uses var */
+    /* Tooltip color is already handled by variables */
+    /* Missing answer highlight is already handled by variables */
 }
+
+/* Ensure dark mode considerations for var(--card-bg) are handled if necessary */
+@media (prefers-color-scheme: dark) {
+    #step1-course-selection .form-section {
+
+/* Ensure dark mode considerations for var(--card-bg) are handled if necessary */
+@media (prefers-color-scheme: dark) {
+    #step1-course-selection .form-section {
 
 /* Ensure dark mode considerations for var(--card-bg) are handled if necessary */
 @media (prefers-color-scheme: dark) {
