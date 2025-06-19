@@ -426,6 +426,37 @@ main {
     color: var(--info-color);
 }
 
+/* Styles for .intro-action when moved into .evaluation-scale-info */
+.evaluation-scale-info .intro-action {
+    padding: 1.5rem 0 0 0; /* Add top padding, reset other padding */
+    background: transparent; /* Remove original background */
+    border-radius: 0; /* Reset border-radius */
+    text-align: center; /* Keep text centered */
+    margin-top: 1.5rem; /* Add space from the emoji scale above */
+    /* Reset any specific layout properties if they conflict, e.g., width, if needed */
+}
+
+.evaluation-scale-info .intro-action::before {
+    display: none; /* Remove the original ::before pseudo-element's line */
+}
+
+.evaluation-scale-info .start-survey-btn {
+    padding: 1rem 2rem; /* Reduced padding */
+    font-size: 1.1rem; /* Reduced font size */
+    min-width: auto; /* Allow button to be smaller */
+    margin-bottom: 0.75rem; /* Space for the note below */
+    /* If the button is still too wide, consider adding: */
+    /* width: auto; display: inline-block; */
+    /* Or, if it should be a certain percentage of its new container: */
+    /* width: 80%; max-width: 280px; */
+}
+
+.evaluation-scale-info .action-note {
+    font-size: 0.85rem; /* Optional: adjust font size */
+    margin-top: 0.5rem; /* Ensure consistent spacing */
+}
+
+
 /* ============================================
    RESPONSIVE DESIGN
    ============================================ */
@@ -1068,6 +1099,19 @@ textarea[name*="professor_"]::placeholder,
 #step1-course-selection .section-title.text-primary {
     color: var(--header-color) !important;
 }
+
+/* Specificity check for horizontal scale, ensure it's not affected by general .intro-action styles */
+/* This is mostly a safeguard; the more specific targeting above should prevent issues. */
+.evaluation-scale-info .scale-horizontal-container {
+    display: flex !important; /* Re-assert if necessary, though current CSS uses !important */
+    justify-content: center;
+    align-items: stretch;
+    flex-direction: row !important; /* Re-assert if necessary */
+    flex-wrap: nowrap !important; /* Re-assert if necessary */
+    gap: 0.75rem; /* Ensure gap is maintained */
+    margin-bottom: 0; /* Ensure no unexpected margin from .intro-action if it had one globally */
+}
+
 
 /* Icono del título de selección de curso */
 #step1-course-selection .section-title i {
