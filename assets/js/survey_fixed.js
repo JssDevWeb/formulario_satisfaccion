@@ -930,21 +930,9 @@ function initializeEventListeners() {
     document.getElementById('resetForm').addEventListener('click', 
         NavigationManager.resetSurvey.bind(NavigationManager));
 
-    // Manejo de inputs de rating
-    document.addEventListener('change', function(e) {
-        if (e.target.type === 'radio' && e.target.closest('.rating-buttons')) {
-            const ratingContainer = e.target.closest('.form-group');
-            const selectedRating = ratingContainer.querySelector('.selected-rating');
-            const ratingValue = ratingContainer.querySelector('.rating-value');
-            
-            if (selectedRating && ratingValue) {
-                ratingValue.textContent = e.target.value;
-                selectedRating.style.display = 'block';
-            }
-        }
-    });
-
     // Contador de caracteres para textarea
+    // El listener de rating-buttons anterior ha sido eliminado porque
+    // la nueva lógica de tabla usa addEmojiCellListeners.
     document.addEventListener('input', function(e) {
         if (e.target.tagName === 'TEXTAREA') {
             const counter = e.target.parentNode.querySelector('.char-counter');
