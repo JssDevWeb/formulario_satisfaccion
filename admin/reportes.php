@@ -903,10 +903,17 @@ function generarGraficoProfesorEspecifico($db, $profesor_id, $profesor_nombre, $
                                     <!-- Mostrar fechas disponibles para este curso -->
                                     <?php
                                     try {                                        $stmt = $db->prepare("
-                                            SELECT DISTINCT DATE(e.fecha_envio) as fecha_disponible, COUNT(*) as total_encuestas
-                                            FROM encuestas e 
-                                            WHERE e.curso_id = :curso_id 
+                                            SELECT
+                                                DISTINCT DATE(e.fecha_envio) as fecha_disponible,
+                                                COUNT(DISTINCT e.id) as total_encuestas
+                                            FROM encuestas e
+                                            JOIN respuestas r ON e.id = r.encuesta_id
+                                            JOIN preguntas pr ON r.pregunta_id = pr.id
+                                            WHERE e.curso_id = :curso_id
+                                              AND pr.tipo = 'escala'
+                                              AND (pr.seccion = 'curso' OR pr.seccion = 'profesor')
                                             GROUP BY DATE(e.fecha_envio)
+                                            HAVING COUNT(DISTINCT e.id) > 0
                                             ORDER BY DATE(e.fecha_envio) DESC 
                                             LIMIT 5
                                         ");
