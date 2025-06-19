@@ -456,6 +456,130 @@ main {
     margin-top: 0.5rem; /* Ensure consistent spacing */
 }
 
+/* Restyling for #step1-course-selection to match welcome screen aesthetic */
+#step1-course-selection .form-section {
+    background: var(--card-bg); /* Consistent with other cards, #ffffff in light mode */
+    border: 1px solid rgba(0, 0, 0, 0.08); /* Softer border */
+    border-radius: 1.5rem; /* Slightly larger radius */
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.05); /* Softer shadow */
+    min-height: auto; /* Let content define height */
+    padding: 2.5rem; /* Adjusted padding */
+    /* overflow: hidden; */ /* Retained from original if needed, but commented if not strictly for child elements */
+    /* transition and animation are removed by not re-declaring or overriding them here */
+}
+
+#step1-course-selection .form-section::before {
+    display: none; /* Remove the shine animation pseudo-element */
+}
+
+#step1-course-selection .section-title {
+    background: transparent; /* Remove specific background */
+    border: none; /* Remove border */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Subtle bottom border */
+    text-shadow: none; /* Remove text shadow */
+    color: var(--header-color); /* Keep original color, ensure contrast */
+    padding: 0.5rem 0; /* Adjust padding */
+    margin: 0 auto 2.5rem auto; /* Increased bottom margin for more space */
+    font-size: 1.75rem; /* Match intro header style more closely */
+    font-weight: 700;
+    letter-spacing: normal; /* Reset from uppercase if it was */
+    text-transform: none; /* Reset from uppercase */
+}
+
+#step1-course-selection .section-title i {
+    /* Styles for icon if needed, e.g., color or size */
+    color: var(--primary-color); /* Match primary icon color theme */
+    filter: none; /* Remove previous filter */
+}
+
+
+#step1-course-selection .form-label {
+    color: #343a40; /* Dark gray for text */
+    font-weight: 600; /* Slightly less than 700 for a softer look */
+    margin-bottom: 0.75rem; /* Adjusted margin */
+}
+
+#step1-course-selection .form-select {
+    border: 1px solid #ced4da; /* Standard Bootstrap-like border */
+    border-radius: var(--border-radius); /* Standard border-radius */
+    color: #495057; /* Standard text color for forms */
+    box-shadow: var(--box-shadow); /* Default subtle shadow */
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' stroke='%23495057' stroke-width='2' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E"); /* Updated arrow color */
+    font-size: 1rem; /* Standard font size */
+    padding: 0.75rem 1rem; /* Standard padding */
+    padding-right: 2.5rem; /* Ensure space for arrow */
+}
+
+#step1-course-selection .form-select:focus {
+    border-color: var(--primary-color); /* Keep primary color for focus */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15); /* Standard focus shadow */
+    transform: none; /* Remove previous transform on focus */
+}
+
+#profesoresInfo {
+    background: rgba(13, 202, 240, 0.05); /* Lighter, more subtle info background */
+    border: 1px solid rgba(13, 202, 240, 0.3); /* Softer info border */
+    box-shadow: var(--box-shadow); /* Consistent subtle shadow */
+    border-radius: var(--border-radius); /* Standard radius */
+}
+
+#profesoresInfo h6 {
+    color: #0a58ca; /* Darker blue for heading in info box */
+    font-weight: 600;
+}
+
+#step1-course-selection .submit-btn {
+    /* Keep existing green button style, or adjust if it clashes too much */
+    /* For example, to make it a standard primary button: */
+    /*
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.25);
+    */
+}
+/* Ensure dark mode considerations for var(--card-bg) are handled if necessary */
+@media (prefers-color-scheme: dark) {
+    #step1-course-selection .form-section {
+        border-color: rgba(255, 255, 255, 0.12); /* Softer border for dark mode */
+        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15); /* Adjusted shadow for dark */
+    }
+
+    #step1-course-selection .section-title {
+        border-bottom-color: rgba(255, 255, 255, 0.15);
+        color: #e2e8f0; /* Lighter text for dark mode title */
+    }
+     #step1-course-selection .section-title i {
+        color: var(--primary-light);
+    }
+
+
+    #step1-course-selection .form-label {
+        color: #adb5bd; /* Lighter label for dark mode */
+    }
+
+    #step1-course-selection .form-select {
+        background-color: #212529; /* Darker select background */
+        border-color: #495057; /* Darker border */
+        color: #f8f9fa; /* Light text */
+        box-shadow: inset 0 1px 2px rgba(0,0,0,.075), 0 0.125rem 0.25rem rgba(0,0,0,.2); /* Adjusted shadow for dark */
+        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' stroke='%23f8f9fa' stroke-width='2' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E"); /* Light arrow */
+    }
+
+    #step1-course-selection .form-select:focus {
+        background-color: #2b3035; /* Slightly lighter dark focus background */
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb),.25); /* Standard Bootstrap focus shadow, needs --bs-primary-rgb or use explicit color */
+    }
+
+    #profesoresInfo {
+        background: rgba(13, 202, 240, 0.1); /* Keep light info blue, might need adjustment if too bright */
+        border-color: rgba(13, 202, 240, 0.4);
+    }
+    #profesoresInfo h6 {
+       color: #79c5e9; /* Lighter info heading for dark mode */
+    }
+
+}
+
 
 /* ============================================
    RESPONSIVE DESIGN
