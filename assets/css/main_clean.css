@@ -45,16 +45,53 @@
     --mobile: 768px;
     --tablet: 992px;
     --desktop: 1200px;
+
+    /* Survey Table Specific Variables - Light Mode */
+    --border-color-default: #dee2e6;
+    --table-header-bg: #f8f9fa;
+    --question-text-color: #212529; /* Equivalent to old --dark-color in light mode */
+    --question-row-hover-bg: var(--hover-bg); /* #f8f9fa */
+    --question-text-col-bg: linear-gradient(135deg, rgba(248, 249, 250, 0.8) 0%, rgba(233, 236, 239, 0.3) 100%);
+    --emoji-cell-bg: linear-gradient(135deg, rgba(248, 249, 250, 0.3) 0%, rgba(233, 236, 239, 0.1) 100%);
+    --emoji-cell-hover-bg: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.05) 100%);
+    --emoji-cell-selected-bg: var(--primary-color-soft-bg, #e7f0fe); /* Soft background for the whole cell */
+    --emoji-cell-selected-emoji-bg: var(--primary-light);
+    --emoji-cell-selected-emoji-text-color: #ffffff;
+    --emoji-cell-tooltip-bg: #333333;
+    --emoji-cell-tooltip-text: #ffffff;
+    --missing-answer-row-bg: #fff3f3;
+    --missing-answer-row-highlight-border: var(--danger-color);
 }
 
 /* Modo oscuro */
-:root {
-    --dark-color: #f8f9fa;
-    --light-color: #212529;
-    --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
-    --card-bg: #2d3748;
-    --table-bg: #2d3748;
-    --hover-bg: #4a5568;
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Existing dark mode variables */
+        --dark-color: #f8f9fa; /* Text color for dark elements on light bg in light mode, now main light text */
+        --light-color: #212529; /* Background color for light elements on dark bg in light mode, now main dark bg component */
+        --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+        --card-bg: #2d3748; /* Used by table background */
+        --table-bg: #2d3748; /* Explicit for tables if needed */
+        --hover-bg: #4a5568; /* Used by table row hover */
+
+        /* Survey Table Specific Variables - Dark Mode */
+        --border-color-default: #495057;
+        --table-header-bg: #343a40;
+        --question-text-color: #f8f9fa;
+        --question-row-hover-bg: var(--hover-bg); /* Inherits general dark hover */
+        --question-text-col-bg: linear-gradient(135deg, rgba(74, 85, 104, 0.5) 0%, rgba(45, 55, 72, 0.3) 100%);
+        --emoji-cell-bg: linear-gradient(135deg, rgba(74, 85, 104, 0.3) 0%, rgba(45, 55, 72, 0.1) 100%);
+        --emoji-cell-hover-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        --emoji-cell-selected-bg: var(--primary-dark-soft-bg, #2c3e50);
+        --emoji-cell-selected-emoji-bg: var(--primary-dark);
+        --emoji-cell-selected-emoji-text-color: #ffffff;
+        --emoji-cell-tooltip-bg: #f8f9fa;
+        --emoji-cell-tooltip-text: #212529;
+        --missing-answer-row-bg: rgba(220, 53, 69, 0.2);
+        /* --missing-answer-row-highlight-border: var(--danger-color); /* Danger color is universal */
+    }
+    /* Other specific dark mode overrides from the file will follow here... */
+    /* For example, the existing @media (prefers-color-scheme: dark) that contains selectors */
 }
 
 /* Reset */
@@ -546,20 +583,20 @@ main {
     border-collapse: separate; /* Allows border-radius on cells if needed, and spacing */
     border-spacing: 0;
     margin-top: 1.5rem;
-    border: 1px solid #dee2e6; /* Light border for the table */
-    border-radius: var(--border-radius); /* Consistent border radius */
-    background-color: var(--card-bg); /* Usually white in light mode */
+    border: 1px solid var(--border-color-default);
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
 }
 
 .evaluation-section .questions-container .evaluation-table thead.sticky-top th {
-    background-color: #f8f9fa; /* Light grey for sticky header */
-    color: var(--header-color); /* Darker text for header */
+    background-color: var(--table-header-bg);
+    color: var(--header-color);
     font-weight: 600;
     font-size: 0.9rem;
     padding: 0.75rem 1rem;
     text-align: center;
     vertical-align: middle;
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid var(--border-color-default);
 }
 
 .evaluation-section .questions-container .evaluation-table th.question-text-col {
@@ -592,19 +629,20 @@ main {
 }
 
 .evaluation-section .questions-container .evaluation-table tbody tr:hover {
-    background-color: var(--hover-bg); /* Light hover for rows */
+    background-color: var(--question-row-hover-bg);
 }
 
 .evaluation-section .questions-container .evaluation-table td {
     padding: 0.75rem 1rem;
     vertical-align: middle;
-    border-top: 1px solid #dee2e6; /* Standard row separator */
+    border-top: 1px solid var(--border-color-default);
 }
 
 .evaluation-section .questions-container .evaluation-table td.question-text-col {
     font-weight: 500;
-    color: #212529; /* Standard text color */
+    color: var(--question-text-color);
     font-size: 0.95rem;
+    /* background: var(--question-text-col-bg); /* Optional: if a subtle bg is desired for this column */
 }
 
 .evaluation-section .questions-container .evaluation-table td.question-text-col .question-number {
@@ -619,7 +657,12 @@ main {
     padding: 0.5rem; /* Reduced padding for tighter cells */
     position: relative; /* For radio button and tooltip */
     min-width: 70px; /* Ensure cells have some width */
+    background: var(--emoji-cell-bg);
 }
+.evaluation-section .questions-container .emoji-cell:hover {
+    background: var(--emoji-cell-hover-bg);
+}
+
 
 .evaluation-section .questions-container .emoji-cell .emoji-only {
     font-size: 1.8rem; /* Emoji size */
@@ -629,19 +672,19 @@ main {
     border-radius: var(--border-radius-sm);
 }
 
-.evaluation-section .questions-container .emoji-cell:hover .emoji-only {
+/* .evaluation-section .questions-container .emoji-cell:hover .emoji-only { */
     /* display: block; /* Optionally show on hover if not selected */
     /* opacity: 0.5; */
-}
+/* } */
 
 .evaluation-section .questions-container .emoji-cell.selected .emoji-only {
     display: inline-block; /* Show selected emoji */
-    background-color: var(--primary-light); /* Highlight background for selected emoji */
-    color: white; /* Or dark color if primary-light is too light */
+    background-color: var(--emoji-cell-selected-emoji-bg);
+    color: var(--emoji-cell-selected-emoji-text-color);
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 .evaluation-section .questions-container .emoji-cell.selected {
-    background-color: var(--primary-color-soft-bg, #e7f0fe); /* Soft background for the whole cell */
+    background-color: var(--emoji-cell-selected-bg);
 }
 
 
@@ -663,8 +706,8 @@ main {
     bottom: calc(100% + 5px); /* Position above the cell */
     left: 50%;
     transform: translateX(-50%);
-    background-color: #333;
-    color: white;
+    background-color: var(--emoji-cell-tooltip-bg);
+    color: var(--emoji-cell-tooltip-text);
     padding: 0.25rem 0.5rem;
     border-radius: var(--border-radius-sm);
     font-size: 0.75rem;
@@ -693,74 +736,67 @@ main {
 }
 .evaluation-section .questions-container .non-scale-input-cell .char-counter-wrapper {
     font-size: 0.8rem;
-    color: #6c757d;
+    color: var(--secondary-color); /* Use variable */
     margin-top: 0.25rem;
 }
 
 
 /* Validation Styles for Table Rows */
 .evaluation-section .questions-container tr.missing-answer td {
-    background-color: #fff3f3 !important; /* Light red background for missing answers */
+    background-color: var(--missing-answer-row-bg) !important;
 }
 .evaluation-section .questions-container tr.missing-answer td.question-text-col {
-    border-left: 3px solid var(--danger-color); /* Highlight required question text cell */
+    border-left: 3px solid var(--missing-answer-row-highlight-border);
     font-weight: bold;
 }
-.evaluation-section .questions-container tr.border-danger td { /* If JS adds border-danger to TR */
-     border-top-color: var(--danger-color);
-     border-bottom-color: var(--danger-color);
+.evaluation-section .questions-container tr.border-danger td {
+     border-top-color: var(--missing-answer-row-highlight-border);
+     border-bottom-color: var(--missing-answer-row-highlight-border);
 }
-.evaluation-section .questions-container tr.border-danger:first-child td { border-top-color: var(--danger-color); }
-.evaluation-section .questions-container tr.border-danger:last-child td { border-bottom-color: var(--danger-color); }
+.evaluation-section .questions-container tr.border-danger:first-child td {
+    border-top-color: var(--missing-answer-row-highlight-border);
+}
+.evaluation-section .questions-container tr.border-danger:last-child td {
+    border-bottom-color: var(--missing-answer-row-highlight-border);
+}
 
 
-/* Dark Mode Table Styles */
+/* Dark Mode Table Styles (now using variables defined in dark mode :root) */
 @media (prefers-color-scheme: dark) {
     .evaluation-section .questions-container .evaluation-table {
-        border-color: #495057; /* Darker border for table */
-        /* background-color: var(--card-bg) is already set for dark mode */
+        border-color: var(--border-color-default);
     }
 
     .evaluation-section .questions-container .evaluation-table thead.sticky-top th {
-        background-color: #343a40; /* Darker header background */
-        color: #f8f9fa; /* Light text for header */
-        border-bottom-color: #495057;
+        background-color: var(--table-header-bg);
+        color: var(--question-text-color); /* General light text for dark mode */
+        border-bottom-color: var(--border-color-default);
     }
 
     .evaluation-section .questions-container .evaluation-table td {
-        border-top-color: #495057; /* Darker row separator */
+        border-top-color: var(--border-color-default);
     }
 
-    .evaluation-section .questions-container .evaluation-table tbody tr:hover {
-        background-color: var(--hover-bg); /* Dark hover for rows */
-    }
+    /* .evaluation-section .questions-container .evaluation-table tbody tr:hover is already var(--question-row-hover-bg) which is var(--hover-bg) */
 
     .evaluation-section .questions-container .evaluation-table td.question-text-col {
-        color: #f8f9fa; /* Light text for question */
+        color: var(--question-text-color);
+        /* background: var(--question-text-col-bg); /* This is already set for dark mode via variable */
     }
-    .evaluation-section .questions-container .evaluation-table td.question-text-col .question-number {
-        color: var(--primary-light);
-    }
+    /* .evaluation-section .questions-container .evaluation-table td.question-text-col .question-number color is var(--primary-light) via variable */
 
 
-    .evaluation-section .questions-container .emoji-cell.selected .emoji-only {
-        background-color: var(--primary-dark); /* Darker highlight for selected emoji */
-    }
-    .evaluation-section .questions-container .emoji-cell.selected {
-       background-color: var(--primary-dark-soft-bg, #2c3e50); /* Darker soft background for cell */
-    }
+    /* .evaluation-section .questions-container .emoji-cell.selected .emoji-only uses vars */
+    /* .evaluation-section .questions-container .emoji-cell.selected uses vars */
+    /* .evaluation-section .questions-container .emoji-cell background uses var */
+    /* .evaluation-section .questions-container .emoji-cell:hover background uses var */
 
-    .evaluation-section .questions-container .emoji-cell::after { /* Tooltip */
-        background-color: #f8f9fa;
-        color: #212529;
-    }
 
-    .evaluation-section .questions-container tr.missing-answer td {
-        background-color: rgba(220, 53, 69, 0.15) !important; /* Darker light red */
-    }
-    .evaluation-section .questions-container tr.missing-answer td.question-text-col {
-        border-left-color: var(--danger-color);
-    }
+    /* .evaluation-section .questions-container .emoji-cell::after (Tooltip) uses vars */
+
+
+    /* .evaluation-section .questions-container tr.missing-answer td uses var */
+    /* .evaluation-section .questions-container tr.missing-answer td.question-text-col border uses var */
 }
 
 /* Ensure dark mode considerations for var(--card-bg) are handled if necessary */
