@@ -38,6 +38,7 @@ const AppState = {
     allQuestions: [], // Stores all questions (course and professor)
     courseQuestions: [], // Derived from allQuestions
     professorQuestions: [], // Derived from allQuestions
+    startTime: null, // Hora de inicio de la encuesta
     responses: {
         formulario_id: null,
         course_answers: {},
@@ -286,31 +287,21 @@ const FormularioManager = {
 
 // Manejo de preguntas
 const QuestionManager = {
+    // Retain the advanced loadAllQuestions from the workspace
     async loadAllQuestions() {
         if (AppState.allQuestions.length > 0) {
             debugLog('Todas las preguntas ya están cargadas.');
             return true;
         }
         try {
-            // Attempt to fetch all questions. Assuming the API returns both course and professor questions
-            // If seccion is not specified, or if there's an 'all' parameter.
-            // This is an assumption about the backend API (get_preguntas.php)
             const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}`);
             debugLog('Respuesta completa de API para get_preguntas.php:', response);
 
-            // The PHP API (get_preguntas.php) when seccion=todas (default) returns:
-            // { success: true, data: { curso: [], profesor: [] }, ... }
-            // When a specific seccion is requested, it returns:
-            // { success: true, data: [ ...questions for that section... ], ... }
-
             if (response && response.success && response.data) {
                 if (Array.isArray(response.data)) {
-                    // This case handles if API returns a flat array of all questions (e.g. future API version or specific filter)
-                    // Each question object in this array must have a 'seccion' property.
                     AppState.allQuestions = response.data;
                     debugLog('Todas las preguntas cargadas desde un array plano en response.data:', AppState.allQuestions);
                 } else if (response.data.curso && response.data.profesor) {
-                    // This handles the default case for seccion=todas from get_preguntas.php
                     AppState.courseQuestions = response.data.curso;
                     AppState.professorQuestions = response.data.profesor;
                     AppState.allQuestions = [...response.data.curso, ...response.data.profesor];
@@ -323,8 +314,6 @@ const QuestionManager = {
                     return false;
                 }
 
-                // If AppState.allQuestions was populated directly (e.g. flat array)
-                // and course/professor questions weren't, derive them now.
                 if (AppState.allQuestions.length > 0 && (AppState.courseQuestions.length === 0 && AppState.professorQuestions.length === 0)) {
                     AppState.courseQuestions = AppState.allQuestions.filter(q => q.seccion === 'curso');
                     AppState.professorQuestions = AppState.allQuestions.filter(q => q.seccion === 'profesor');
@@ -333,140 +322,284 @@ const QuestionManager = {
                 debugLog('AppState.allQuestions final:', AppState.allQuestions);
                 debugLog('AppState.courseQuestions final derivado:', AppState.courseQuestions);
                 debugLog('AppState.professorQuestions final derivado:', AppState.professorQuestions);
-                return true; // Successfully processed questions
+                return true;
             } else {
-                // This 'else' block is executed if the condition (response && response.success && response.data) is false.
-                // This means either the response object itself is falsy, or success is false, or data is missing.
                 Utils.showAlert('No se pudieron cargar las preguntas: respuesta inválida o no exitosa de la API.', 'warning');
-                console.warn("Respuesta de API para preguntas (inválida o no exitosa):", response); // Corrected 'data' to 'response'
-                return false; // Indicate failure
+                console.warn("Respuesta de API para preguntas (inválida o no exitosa):", response);
+                return false;
             }
         } catch (error) {
-            console.error('Error cargando todas las preguntas:', error); // Catches errors from fetchAPI or other synchronous errors
+            console.error('Error cargando todas las preguntas:', error);
             Utils.showAlert('Error crítico al cargar las preguntas base.', 'danger');
             return false;
         }
     },
 
+    // Modified loadCourseQuestions to use new renderQuestions
     async loadCourseQuestions() {
+        debugLog("Solicitando carga de preguntas de curso.");
         if (AppState.courseQuestions.length === 0 && AppState.allQuestions.length > 0) {
-             // Already loaded and filtered by loadAllQuestions
-            debugLog("Usando preguntas de curso desde allQuestions");
+            debugLog("Usando preguntas de curso desde AppState.allQuestions pre-cargadas.");
+            // AppState.courseQuestions should already be filtered by loadAllQuestions
         } else if (AppState.allQuestions.length === 0) {
-            // Fallback or initial load if loadAllQuestions hasn't run or failed for course specific part
-            debugLog("loadAllQuestions no ha sido llamado o no retornó preguntas de curso, intentando carga específica.");
-            // This path should ideally not be taken if loadAllQuestions is called first.
-            // Kept for robustness or if direct call is ever needed.
+            debugLog("AppState.allQuestions vacío. Ejecutando fallback de API para preguntas de curso.");
             try {
-                debugLog("Ejecutando fallback de API para preguntas de curso");
                 const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=curso`);
                 debugLog("Respuesta de API en fallback (curso):", response);
-                // When seccion=curso, PHP returns { success: true, data: [...] }
-                if (response && response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                if (response && response.success && response.data && Array.isArray(response.data)) {
                     AppState.courseQuestions = response.data;
-                    debugLog("Preguntas de curso cargadas desde fallback:", AppState.courseQuestions);
-                    // If allQuestions is empty, populate it partially or fully
                     if (!AppState.allQuestions.some(q => q.seccion === 'curso')) {
                         AppState.allQuestions = AppState.allQuestions.concat(response.data);
-                         debugLog("AppState.allQuestions actualizado desde fallback (curso):", AppState.allQuestions);
                     }
+                    debugLog("Preguntas de curso cargadas desde fallback y AppState actualizado.", { course: AppState.courseQuestions, all: AppState.allQuestions});
                 } else {
-                     Utils.showAlert('No hay preguntas disponibles para este curso (carga específica)', 'warning');
+                     Utils.showAlert('No hay preguntas disponibles para este curso (carga específica).', 'warning');
                      debugLog("No se encontraron preguntas de curso en fallback o respuesta inválida:", response);
-                     return;
+                     return; // Exit if no questions loaded
                 }
             } catch (error) {
                 console.error('Error cargando preguntas del curso (carga específica):', error);
-                Utils.showAlert('Error al cargar las preguntas del curso', 'danger');
-                return;
+                Utils.showAlert('Error al cargar las preguntas del curso.', 'danger');
+                return; // Exit on error
             }
         }
 
         if (AppState.courseQuestions.length > 0) {
             this.renderQuestions(AppState.courseQuestions, 'courseQuestions', 'course');
-            document.getElementById('courseTitle').textContent = AppState.currentFormulario.curso_nombre;
+            if(AppState.currentFormulario) {
+                document.getElementById('courseTitle').textContent = AppState.currentFormulario.curso_nombre;
+            }
         } else {
             Utils.showAlert('No hay preguntas de curso para mostrar.', 'warning');
         }
     },
 
+    // Modified loadProfessorQuestions to use new renderQuestions
     async loadProfessorQuestions() {
+        debugLog("Solicitando carga de preguntas de profesor.");
         if (AppState.professorQuestions.length === 0 && AppState.allQuestions.length > 0) {
-            debugLog("Usando preguntas de profesor desde allQuestions");
+            debugLog("Usando preguntas de profesor desde AppState.allQuestions pre-cargadas.");
+            // AppState.professorQuestions should already be filtered by loadAllQuestions
         } else if (AppState.allQuestions.length === 0) {
-            debugLog("loadAllQuestions no ha sido llamado o no retornó preguntas de profesor, intentando carga específica.");
-            // This path should ideally not be taken.
+            debugLog("AppState.allQuestions vacío. Ejecutando fallback de API para preguntas de profesor.");
             try {
-                debugLog("Ejecutando fallback de API para preguntas de profesor");
                 const response = await Utils.fetchAPI(`${CONFIG.ENDPOINTS.preguntas}?seccion=profesor`);
                 debugLog("Respuesta de API en fallback (profesor):", response);
-                // When seccion=profesor, PHP returns { success: true, data: [...] }
-                if (response && response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                if (response && response.success && response.data && Array.isArray(response.data)) {
                     AppState.professorQuestions = response.data;
-                    debugLog("Preguntas de profesor cargadas desde fallback:", AppState.professorQuestions);
                      if (!AppState.allQuestions.some(q => q.seccion === 'profesor')) {
                         AppState.allQuestions = AppState.allQuestions.concat(response.data);
-                        debugLog("AppState.allQuestions actualizado desde fallback (profesor):", AppState.allQuestions);
                     }
+                    debugLog("Preguntas de profesor cargadas desde fallback y AppState actualizado.", { professor: AppState.professorQuestions, all: AppState.allQuestions});
                 } else {
-                    Utils.showAlert('No hay preguntas disponibles para evaluar profesores (carga específica)', 'warning');
+                    Utils.showAlert('No hay preguntas disponibles para evaluar profesores (carga específica).', 'warning');
                     debugLog("No se encontraron preguntas de profesor en fallback o respuesta inválida:", response);
-                    return;
+                    return; // Exit if no questions loaded
                 }
             } catch (error) {
                 console.error('Error cargando preguntas del profesor (carga específica):', error);
-                Utils.showAlert('Error al cargar las preguntas del profesor', 'danger');
-                return;
+                Utils.showAlert('Error al cargar las preguntas del profesor.', 'danger');
+                return; // Exit on error
             }
         }
 
         if (AppState.professorQuestions.length > 0) {
-            this.renderProfessorQuestions();
+            this.renderProfessorQuestions(); // This will call the new renderQuestions
         } else {
             Utils.showAlert('No hay preguntas de profesor para mostrar.', 'warning');
         }
     },
 
+    // User's renderQuestions (table-based)
     renderQuestions(questions, containerId, prefix) {
-        debugLog(`Renderizando preguntas para ${containerId}`, { count: questions ? questions.length : 0, questions: questions });
+        debugLog(`Renderizando ${questions.length} preguntas en ${containerId} con prefijo ${prefix}`);
         const container = document.getElementById(containerId);
-        container.innerHTML = ''; // Clear existing questions
-
-        if (!questions || questions.length === 0) {
-            debugLog(`No questions to render for ${containerId}`);
+        if (!container) {
+            console.error(`Contenedor ${containerId} no encontrado.`);
             return;
         }
+        container.innerHTML = ''; // Limpiar contenedor
 
-        const fragment = document.createDocumentFragment();
+        let html = `
+            <div class="table-responsive">
+                <table class="table evaluation-table table-hover">
+                    <thead class="sticky-top">
+                        <tr>
+                            <th class="question-text-col">Pregunta</th>
+                            <th class="emoji-header">Excelente</th>
+                            <th class="emoji-header">Bueno</th>
+                            <th class="emoji-header">Correcto</th>
+                            <th class="emoji-header">Regular</th>
+                            <th class="emoji-header">Deficiente</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
         questions.forEach((question, index) => {
-            const questionDiv = this.createQuestionElement(question, prefix, index);
-            fragment.appendChild(questionDiv);
+            const inputName = `${prefix}_${question.id}`;
+            if (question.tipo === 'escala') {
+                html += this.createScaleHTML(question, inputName, index + 1);
+            } else {
+                html += this.createNonScaleQuestionHTML(question, inputName, index + 1);
+            }
         });
 
-        debugLog(`Fragmento para ${containerId} tiene ${fragment.childNodes.length} nodos hijos.`, fragment);
-        container.appendChild(fragment); // Append all questions at once
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        container.innerHTML = html;
+        this.addEmojiCellListeners(containerId);
+        debugLog("Tabla de preguntas renderizada y listeners agregados.");
     },
 
+    // User's renderProfessorQuestions (adapted to call new renderQuestions)
     renderProfessorQuestions() {
         const profesor = AppState.profesores[AppState.currentProfessorIndex];
-        if (!profesor) return;
+        if (!profesor) {
+            debugLog("renderProfessorQuestions: No hay profesor actual, saliendo.");
+            return;
+        }
+        debugLog("Renderizando preguntas para profesor:", profesor);
 
-        // Actualizar título del profesor
         document.getElementById('professorTitle').textContent = profesor.nombre;
         document.getElementById('professorCounter').textContent = 
             `Profesor ${AppState.currentProfessorIndex + 1} de ${AppState.profesores.length}`;
 
-        // Renderizar preguntas
         this.renderQuestions(
             AppState.professorQuestions, 
             'professorQuestions', 
-            `professor_${profesor.id}`
+            `professor_${profesor.id}` // Usar profesor.id para unicidad del input name
         );
-
-        // Actualizar botones de navegación
         this.updateProfessorNavigation();
     },
 
+    // User's createScaleHTML
+    createScaleHTML(question, inputName, questionNumber) {
+        const isRequired = question.es_obligatoria;
+        const options = [
+            { label: 'Excelente', value: 10, emoji: '😃' },
+            { label: 'Bueno', value: 8, emoji: '🙂' },
+            { label: 'Correcto', value: 6, emoji: '😐' },
+            { label: 'Regular', value: 4, emoji: '😕' },
+            { label: 'Deficiente', value: 2, emoji: '😞' }
+        ];
+
+        let cellsHTML = options.map(opt => `
+            <td class="emoji-cell text-center" data-label="${opt.label} (${opt.value})">
+                <input type="radio"
+                       name="${inputName}"
+                       id="${inputName}_${opt.value}"
+                       value="${opt.value}"
+                       ${isRequired ? 'required' : ''}
+                       class="form-check-input visually-hidden">
+                <label for="${inputName}_${opt.value}" class="emoji-only">${opt.emoji}</label>
+            </td>
+        `).join('');
+
+        return `
+            <tr data-question-id="${question.id}" data-question-type="${question.tipo}" ${isRequired ? 'data-required="true"' : ''}>
+                <td class="question-text-col">
+                    <span class="question-number">${questionNumber}.</span> ${question.texto}
+                    ${isRequired ? '<span class="text-danger">*</span>' : ''}
+                </td>
+                ${cellsHTML}
+            </tr>
+        `;
+    },
+
+    // User's createMultipleChoiceHTML (for embedding in createNonScaleQuestionHTML)
+    createMultipleChoiceHTML(question, inputName) {
+        let optionsHTML = '';
+        if (question.opciones_array && question.opciones_array.length > 0) {
+            optionsHTML = question.opciones_array.map((opcion, index) => `
+                <div class="form-check">
+                    <input class="form-check-input" type="radio"
+                           name="${inputName}" value="${opcion}"
+                           id="${inputName}_${index}" ${question.es_obligatoria ? 'required' : ''}>
+                    <label class="form-check-label" for="${inputName}_${index}">
+                        ${opcion}
+                    </label>
+                </div>
+            `).join('');
+        }
+        return `<div class="form-group question-content">${optionsHTML}</div>`;
+    },
+
+    // User's createOpenHTML (for embedding in createNonScaleQuestionHTML)
+    createOpenHTML(question, inputName) {
+        const maxLength = question.respuesta_info?.longitud_max || 2000; // User had 2000
+        return `
+            <div class="form-group question-content">
+                <textarea class="form-control" name="${inputName}"
+                          rows="4" maxlength="${maxLength}"
+                          placeholder="Escriba sus comentarios aquí..."
+                          ${question.es_obligatoria ? 'required' : ''}></textarea>
+                <div class="form-text text-end char-counter-wrapper">
+                    <span class="char-counter">0/${maxLength}</span> caracteres
+                </div>
+            </div>
+        `;
+    },
+
+    // User's createNonScaleQuestionHTML
+    createNonScaleQuestionHTML(question, inputName, questionNumber) {
+        const isRequired = question.es_obligatoria;
+        let contentHTML = '';
+
+        switch (question.tipo) {
+            case 'opcion_multiple':
+                contentHTML = this.createMultipleChoiceHTML(question, inputName);
+                break;
+            case 'texto':
+                contentHTML = this.createOpenHTML(question, inputName);
+                break;
+            default:
+                contentHTML = `<p class="text-danger">Tipo de pregunta no soportado: ${question.tipo}</p>`;
+        }
+
+        return `
+            <tr data-question-id="${question.id}" data-question-type="${question.tipo}" ${isRequired ? 'data-required="true"' : ''}>
+                <td class="question-text-col">
+                    <span class="question-number">${questionNumber}.</span> ${question.texto}
+                    ${isRequired ? '<span class="text-danger">*</span>' : ''}
+                </td>
+                <td colspan="5" class="non-scale-input-cell">
+                    ${contentHTML}
+                </td>
+            </tr>
+        `;
+    },
+
+    // User's addEmojiCellListeners
+    addEmojiCellListeners(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.querySelectorAll('.emoji-cell').forEach(cell => {
+            cell.addEventListener('click', function() {
+                // Desmarcar otras celdas en la misma fila (pregunta)
+                this.closest('tr').querySelectorAll('.emoji-cell').forEach(otherCell => {
+                    otherCell.classList.remove('selected');
+                    otherCell.querySelector('.emoji-only').style.display = 'none';
+                });
+                // Marcar celda actual
+                this.classList.add('selected');
+                this.querySelector('.emoji-only').style.display = 'block';
+                // Seleccionar el radio button correspondiente
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+
+                // Quitar clase de error si estaba
+                this.closest('tr').classList.remove('missing-answer', 'border-danger');
+            });
+        });
+        debugLog(`Listeners de emoji agregados para ${containerId}`);
+    },
+
+    // Keep this utility from existing workspace
     updateProfessorNavigation() {
         const prevBtn = document.getElementById('prevProfessorBtn');
         const nextBtn = document.getElementById('nextProfessorBtn');
@@ -478,101 +611,6 @@ const QuestionManager = {
         prevBtn.style.display = isFirst ? 'none' : 'inline-block';
         nextBtn.style.display = isLast ? 'none' : 'inline-block';
         submitBtn.style.display = isLast ? 'inline-block' : 'none';
-    },    createQuestionElement(question, prefix, index) {
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'mb-4 p-3 border rounded';
-        questionDiv.dataset.questionId = question.id;
-
-        let questionHTML = `
-            <h6 class="mb-3">${question.texto}</h6>
-        `;
-
-        const inputName = `${prefix}_${question.id}`;
-
-        switch (question.tipo) {
-            case 'opcion_multiple':
-                questionHTML += this.createMultipleChoiceHTML(question, inputName);
-                break;
-            case 'escala':
-                questionHTML += this.createScaleHTML(question, inputName);
-                break;
-            case 'texto':
-                questionHTML += this.createOpenHTML(question, inputName);
-                break;
-            default:
-                questionHTML += `<p class="text-danger">Tipo de pregunta no soportado: ${question.tipo}</p>`;
-        }
-
-        questionDiv.innerHTML = questionHTML;
-        return questionDiv;
-    },    createMultipleChoiceHTML(question, inputName) {
-        let html = '<div class="form-group">';
-        
-        if (question.opciones_array && question.opciones_array.length > 0) {
-            question.opciones_array.forEach((opcion, index) => {
-                html += `
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" 
-                               name="${inputName}" value="${opcion}" 
-                               id="${inputName}_${index}" ${question.es_obligatoria ? 'required' : ''}>
-                        <label class="form-check-label" for="${inputName}_${index}">
-                            ${opcion}
-                        </label>
-                    </div>
-                `;
-            });
-        }
-        
-        html += '</div>';
-        return html;
-    },    createScaleHTML(question, inputName) {
-        // Para preguntas de escala, los rangos están en respuesta_info
-        const maxValue = question.respuesta_info?.rango_max || 5;
-        const minValue = question.respuesta_info?.rango_min || 1;
-        
-        let html = `
-            <div class="form-group">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="badge bg-danger">${minValue}</span>
-                    <span class="text-muted">Calificación</span>
-                    <span class="badge bg-success">${maxValue}</span>
-                </div>
-                <div class="btn-group-toggle rating-buttons" data-toggle="buttons">
-        `;
-        
-        for (let i = minValue; i <= maxValue; i++) {
-            html += `
-                <input type="radio" class="btn-check" name="${inputName}" 
-                       value="${i}" id="${inputName}_${i}" ${question.es_obligatoria ? 'required' : ''}>
-                <label class="btn btn-outline-primary rating-btn" for="${inputName}_${i}">
-                    ${i}
-                </label>
-            `;
-        }
-        
-        html += `
-                </div>
-                <div class="selected-rating mt-2" style="display: none;">
-                    <small class="text-muted">Calificación seleccionada: <span class="rating-value"></span></small>
-                </div>
-            </div>
-        `;
-        
-        return html;
-    },
-
-    createOpenHTML(question, inputName) {        const maxLength = question.respuesta_info?.longitud_max || 1000;
-        return `
-            <div class="form-group">
-                <textarea class="form-control" name="${inputName}" 
-                          rows="4" maxlength="${maxLength}" 
-                          placeholder="Escriba su respuesta aquí..."
-                          ${question.es_obligatoria ? 'required' : ''}></textarea>
-                <div class="form-text">
-                    <span class="char-counter">0/${maxLength} caracteres</span>
-                </div>
-            </div>
-        `;
     }
 };
 
@@ -634,42 +672,58 @@ const NavigationManager = {
     },
 
     validateCurrentStep() {
+        debugLog("Validando paso actual...");
         const currentStepElement = document.querySelector('.survey-step[style*="block"]');
-        if (!currentStepElement) return true;
+        if (!currentStepElement) {
+            debugLog("Elemento del paso actual no encontrado.");
+            return true; // No hay nada que validar si no se encuentra el paso
+        }
 
-        const requiredInputs = currentStepElement.querySelectorAll('[required]');
         let isValid = true;
-        const validatedRadioGroups = {}; // Cache for radio group validation
+        // Buscar todas las filas de preguntas que son requeridas
+        const requiredQuestions = currentStepElement.querySelectorAll('tr[data-required="true"]');
 
-        requiredInputs.forEach(input => {
-            const questionGroupElement = input.closest('.mb-4, .form-group');
+        requiredQuestions.forEach(tr => {
+            tr.classList.remove('missing-answer', 'border-danger'); // Limpiar validación previa
+            let answered = false;
+            const questionType = tr.dataset.questionType;
 
-            if (input.type === 'radio') {
-                const groupName = input.name;
-                if (validatedRadioGroups[groupName] === undefined) { // Check if group already validated
-                    const radioGroup = currentStepElement.querySelectorAll(`[name="${groupName}"]`);
-                    const hasChecked = Array.from(radioGroup).some(radio => radio.checked);
-                    validatedRadioGroups[groupName] = hasChecked; // Store validation result
+            if (questionType === 'escala') {
+                // Para preguntas de escala, verificar si algún radio button está seleccionado
+                const radios = tr.querySelectorAll('input[type="radio"]');
+                if (Array.from(radios).some(radio => radio.checked)) {
+                    answered = true;
                 }
+            } else if (questionType === 'texto') {
+                // Para preguntas de texto, verificar si el textarea tiene contenido
+                const textarea = tr.querySelector('textarea');
+                if (textarea && textarea.value.trim() !== '') {
+                    answered = true;
+                }
+            } else if (questionType === 'opcion_multiple') {
+                // Para opción múltiple, verificar si algún radio button está seleccionado
+                const radios = tr.querySelectorAll('input[type="radio"]');
+                if (Array.from(radios).some(radio => radio.checked)) {
+                    answered = true;
+                }
+            }
+            // Añadir más tipos si es necesario
 
-                if (!validatedRadioGroups[groupName]) {
-                    isValid = false;
-                    if (questionGroupElement) questionGroupElement.classList.add('border-danger');
-                } else {
-                    if (questionGroupElement) questionGroupElement.classList.remove('border-danger');
-                }
-            } else if (input.tagName === 'TEXTAREA' || input.type === 'text') {
-                if (!input.value.trim()) {
-                    isValid = false;
-                    input.classList.add('is-invalid');
-                    if (questionGroupElement) questionGroupElement.classList.add('border-danger');
-                } else {
-                    input.classList.remove('is-invalid');
-                    if (questionGroupElement) questionGroupElement.classList.remove('border-danger');
-                }
+            if (!answered) {
+                isValid = false;
+                tr.classList.add('missing-answer', 'border-danger'); // Marcar la fila como no respondida
+                debugLog(`Pregunta no respondida (ID: ${tr.dataset.questionId}):`, tr.querySelector('.question-text-col').textContent.trim());
             }
         });
 
+        if (!isValid) {
+            Utils.showAlert('Por favor, complete todas las preguntas marcadas con (*) antes de continuar.', 'warning');
+            const firstMissing = currentStepElement.querySelector('.missing-answer');
+            if (firstMissing) {
+                firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        debugLog(`Validación completada. Es válido: ${isValid}`);
         return isValid;
     },
 
@@ -788,11 +842,22 @@ const SubmissionManager = {
         }
     },
 
+    calculateCompletionTime() {
+        if (!AppState.startTime) return null;
+        const endTime = new Date();
+        const diffSeconds = Math.round((endTime - AppState.startTime) / 1000);
+        debugLog(`Tiempo de completado calculado: ${diffSeconds} segundos.`);
+        return diffSeconds;
+    },
+
     prepareSubmissionData() {
+        const tiempoCompletado = this.calculateCompletionTime();
         const data = {
             formulario_id: AppState.responses.formulario_id,
-            respuestas: []
+            respuestas: [],
+            tiempo_completado: tiempoCompletado
         };
+        debugLog("Preparando datos de envío. Tiempo completado:", tiempoCompletado);
 
         // Agregar respuestas del curso
         Object.entries(AppState.responses.course_answers).forEach(([questionId, answer]) => {
@@ -894,29 +959,35 @@ function initializeEventListeners() {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', async function() {
-    debugLog('Inicializando sistema de encuestas secuencial');
+    debugLog('Inicializando sistema de encuestas secuencial - DOMContentLoaded');
     
     // Inicializar event listeners
-    initializeEventListeners();
+    initializeEventListeners(); // Ensure this is called to set up table interactions too
     
     // Cargar formularios disponibles
     await FormularioManager.loadFormularios();
 
     // Pre-cargar todas las preguntas al inicio de la aplicación
-    // Esto sucede en segundo plano y no bloquea la selección del formulario
     QuestionManager.loadAllQuestions().then(loaded => {
         if (loaded) {
-            debugLog("Preguntas base precargadas exitosamente.");
+            debugLog("Preguntas base precargadas exitosamente post DOMContentLoaded.");
         } else {
-            debugLog("Precarga de preguntas base falló o no retornó preguntas.");
+            debugLog("Precarga de preguntas base falló o no retornó preguntas post DOMContentLoaded.");
         }
     }).catch(error => {
-        console.error("Error en la precarga de preguntas:", error);
-        Utils.showAlert("Hubo un problema al cargar datos iniciales de la encuesta.", "warning", 0); // Persistent alert
+        console.error("Error en la precarga de preguntas post DOMContentLoaded:", error);
+        Utils.showAlert("Hubo un problema al cargar datos iniciales de la encuesta (preguntas).", "warning", 0);
     });
     
-    // Mostrar primer paso
+    // Mostrar primer paso (selección de curso)
     Utils.showStep(1);
+    // AppState.startTime será establecido cuando el usuario comience la encuesta (ej. al hacer clic en "startSurveyBtn")
     
-    debugLog('Sistema inicializado correctamente');
+    debugLog('Sistema de encuestas secuencial inicializado y listo.');
 });
+
+// Event Listeners - specifically for table interactions if not covered by existing ones.
+// The user's addEmojiCellListeners is now part of QuestionManager.
+// Textarea char counter is already document-delegated.
+// Radio button changes inside tables for non-scale questions will work by default.
+// The main point is that renderQuestions now calls addEmojiCellListeners.
